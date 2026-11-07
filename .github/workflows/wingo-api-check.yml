@@ -10,30 +10,48 @@ jobs:
   test-api:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify Wingo API
+      - name: Verify WingoBot API
         env:
           API_KEY: ${{ secrets.WINGOBOT_API_KEY }}
         run: |
-          set -e
+          set -euo pipefail
+
           if [ -z "$API_KEY" ]; then
             echo "WINGOBOT_API_KEY secret missing"
             exit 1
           fi
 
-          BASE="https://server.wingoaibot.com"
+          BASE="https://api.wingobot.com"
 
           for ENDPOINT in \
-            "/api/v1/me" \
-            "/api/v1/history/1min?page=1&limit=5" \
-            "/api/v1/history/30sec?page=1&limit=5"
+            "/v2/1-min-game-history" \
+            "/v2/30-sec-game-history"
           do
             echo "===== $ENDPOINT ====="
+
             CODE=$(curl -sS --max-time 25 \
               -o /tmp/wingo.json \
               -w "%{http_code}" \
               -H "Authorization: Bearer $API_KEY" \
               "$BASE$ENDPOINT")
+
             echo "HTTP STATUS: $CODE"
-            cat /tmp/wingo.json
-            echo
+
+            if [ "$CODE" != "200" ]; then
+              echo "API request failed"
+              cat /tmp/wingo.json
+              exit 1
+            fi
+
+            jq -e '.success == true' /tmp/wingo.json > /dev/null
+
+            jq '{
+              success,
+              current_issue: .current.issueNumber,
+              interval_seconds: .current.intervalSecond,
+              records_returned: .stats.returned,
+              latest_results: [.history[:3][] | {
+                issueNumber, number, colour, premium
+              }]
+            }' /tmp/wingo.json
           done

@@ -1,204 +1,303 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html lang="en">
 <head>
-  <title>Meridian Allied Consumer Group | Speak With a Licensed Advisor by Phone</title>
-  <meta name="description" content="Meridian Allied Consumer Group connects U.S. consumers with independent advisors for SSDI support, auto and home insurance, pest control, debt relief, health insurance and final expense planning. Call for a free consultation.">
-  <meta name="robots" content="index, follow">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-  tailwind.config = { theme: { extend: {
-    colors: {
-      navy:{50:'#eef3fb',100:'#d6e2f5',500:'#2f5fb3',600:'#244c92',700:'#1b3a73',800:'#142c58',900:'#0c1d3d'},
-      charcoal:{50:'#f5f6f7',300:'#b4b9c0',500:'#6b7380',600:'#4d5560',700:'#363d47',900:'#1a1e25'},
-      amber:{400:'#ffb21e',500:'#ff9f0a',600:'#e68a00'}
-    },
-    fontFamily:{ sans:['Inter','ui-sans-serif','system-ui','-apple-system','Segoe UI','Roboto','sans-serif'] }
-  } } }
-  </script>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14161f">
+<title>Wingo History Tracker</title>
+<style>
+:root{
+  --bg:#14161f; --panel:#1d2030; --line:#2c3047; --text:#eceef5; --mute:#8d93ad;
+  --green:#1fa971; --red:#e5484d; --violet:#8e5bd6; --accent:#f2b84b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:14px;max-width:760px;margin:0 auto}
+h1{font-size:20px;font-weight:700}
+h2{font-size:15px;font-weight:600;margin-bottom:10px}
+.sub{color:var(--mute);font-size:13px;margin:2px 0 14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.n{border:0;border-radius:10px;height:54px;font-size:22px;font-weight:700;color:#fff;cursor:pointer;position:relative}
+.n:active{transform:scale(.95)}
+.n.g{background:var(--green)} .n.r{background:var(--red)}
+.n.v0{background:linear-gradient(135deg,var(--red) 50%,var(--violet) 50%)}
+.n.v5{background:linear-gradient(135deg,var(--green) 50%,var(--violet) 50%)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row.between{justify-content:space-between}
+button.t,select{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 11px;font:inherit;font-size:13px;cursor:pointer}
+button.t:hover,select:hover{border-color:var(--mute)}
+button.danger{color:var(--red)}
+select{background:var(--panel)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px}
+.stat b{display:block;font-size:20px}
+.stat span{color:var(--mute);font-size:12px}
+.bars{display:flex;align-items:flex-end;gap:6px;height:140px;margin-top:6px}
+.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.bar i{display:block;width:100%;border-radius:5px 5px 0 0;min-height:2px}
+.bar small{font-size:11px;color:var(--mute);margin-top:4px}
+.bar em{font-style:normal;font-size:11px;margin-bottom:2px}
+.split{display:flex;height:22px;border-radius:6px;overflow:hidden;margin:6px 0 4px;background:var(--line)}
+.split div{display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;min-width:0;overflow:hidden}
+.legend{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-bottom:10px}
+.dots{display:flex;flex-wrap:wrap;gap:5px}
+.dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
+.dot.g{background:var(--green)} .dot.r{background:var(--red)}
+.dot.v0{background:linear-gradient(135deg,var(--red) 50%,var(--violet) 50%)}
+.dot.v5{background:linear-gradient(135deg,var(--green) 50%,var(--violet) 50%)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 4px;border-bottom:1px solid var(--line)}
+th{color:var(--mute);font-weight:500}
+.scroll{max-height:300px;overflow:auto}
+.note{color:var(--mute);font-size:12px;margin-top:8px}
+.empty{color:var(--mute);font-size:13px;padding:6px 0}
+input[type=file]{display:none}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
-<body class="bg-slate-50 text-charcoal-700 antialiased">
-  <div id="top-disclaimer" class="bg-charcoal-900 text-slate-300 text-xs text-center py-2 px-4">Meridian Allied Consumer Group is a private company and is not affiliated with, endorsed by, or connected to the Social Security Administration or any government agency.</div>
-  <header id="site-header" class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
-    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
-      <a href="index.html" class="flex items-center gap-3" aria-label="Meridian Allied Consumer Group home">
-        <span class="logo-mark" aria-hidden="true">M</span>
-        <span class="leading-tight"><span class="block text-lg font-bold text-navy-900">Meridian Allied</span><span class="block text-[11px] tracking-[0.2em] uppercase text-charcoal-500">Consumer Group</span></span>
-      </a>
-      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-charcoal-700" aria-label="Primary">
-        <a href="index.html#services" class="hover:text-navy-700">Services</a>
-        <a href="index.html#how-it-works" class="hover:text-navy-700">How It Works</a>
-        <a href="index.html#about" class="hover:text-navy-700">About</a>
-        <a href="#legal" class="hover:text-navy-700">Disclosures</a>
-      </nav>
-      <a id="header-call" href="tel:{{PHONE_TEL}}" class="btn-call text-sm sm:text-base"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.6a1 1 0 01-.25 1z"/></svg><span>{{PHONE_DISPLAY}}</span></a>
-    </div>
-  </header>
+<body>
 
-  <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"Organization","name":"Meridian Allied Consumer Group","url":"https://{{YOUR_DOMAIN}}/","email":"{{BUSINESS_EMAIL}}","telephone":"{{PHONE_DISPLAY}}","address":{"@type":"PostalAddress","streetAddress":"{{STREET_ADDRESS}}","addressLocality":"{{CITY}}","addressRegion":"{{STATE}}","postalCode":"{{ZIP}}","addressCountry":"US"}}
-  </script>
-  <main id="main">
-    <section id="hero" class="hero-bg relative overflow-hidden">
-      <div class="dot-grid absolute inset-0" aria-hidden="true"></div>
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 py-20 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
-        <div>
-          <p class="eyebrow">Independent Advisory Network &bull; United States</p>
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mt-4" id="hero-headline">One Call. Clear Answers. <span class="text-amber-400">Seven Ways We Help.</span></h1>
-          <p class="mt-6 text-lg text-slate-200 max-w-xl" id="hero-subcopy">Speak with a trained advisor about disability claims, insurance, debt, pest control and senior planning. Free consultation. No obligation.</p>
-          <div class="mt-8 flex flex-col sm:flex-row gap-4">
-            <a id="hero-call" href="tel:{{PHONE_TEL}}" class="btn-call btn-call-lg"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.6a1 1 0 01-.25 1z"/></svg> Call {{PHONE_DISPLAY}}</a>
-            <a href="#services" class="btn-ghost">Explore Services</a>
-          </div>
-          <p class="mt-4 text-xs text-slate-300" id="hero-hours">Available {{HOURS_OF_OPERATION}}. Standard carrier rates may apply. Calls may be recorded.</p>
-        </div>
-        <aside class="glass-card p-8" aria-label="Why callers choose us">
-          <h2 class="text-xl font-bold text-white">Why Callers Trust Meridian Allied</h2>
-          <ul class="mt-5 space-y-4 text-slate-100">
-            <li class="check">Free, no-obligation phone consultation</li>
-            <li class="check">Independent advisors across 7 service areas</li>
-            <li class="check">Clear disclosures before any referral</li>
-            <li class="check">Your information is never sold without consent</li>
-          </ul>
-        </aside>
-      </div>
-    </section>
+<h1>Wingo History Tracker</h1>
+<p class="sub">91 Club results record karo, stats dekho. Data sirf is browser me save hota hai.</p>
 
-    <section id="trust-strip" class="bg-white border-y border-slate-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-        <h2 class="text-center text-sm font-semibold tracking-[0.2em] uppercase text-charcoal-500">Built on Transparency</h2>
-        <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div><p class="stat">7</p><p class="stat-label">Service Categories</p></div>
-          <div><p class="stat">50</p><p class="stat-label">States Served</p></div>
-          <div><p class="stat">$0</p><p class="stat-label">Cost to Consult</p></div>
-          <div><p class="stat">1 Call</p><p class="stat-label">To Get Started</p></div>
-        </div>
-      </div>
-    </section>
+<div class="card">
+  <h2>Result add karo (1 tap)</h2>
+  <div class="pad" id="pad"></div>
+  <div class="row between" style="margin-top:10px">
+    <button class="t" id="undo">Undo last</button>
+    <span class="note" id="toast" style="margin:0"></span>
+  </div>
+</div>
 
-    <section id="services" class="max-w-7xl mx-auto px-4 sm:px-6 py-20">
-      <div class="text-center max-w-2xl mx-auto">
-        <h2 class="text-3xl sm:text-4xl font-bold text-navy-900">How Can We Help You Today?</h2>
-        <p class="mt-4 text-charcoal-600">Choose a category below, then call to speak with an advisor.</p>
-      </div>
-      <div class="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <article id="vertical-ssdi" class="service-card">
-          <div class="icon-wrap"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
-          <h3>SSDI Support</h3>
-          <p id="ssdi-copy">Get information about disability claims and appeals from an independent advisor who can connect you with a qualified representative.</p>
-          <a href="tel:{{PHONE_TEL}}" class="card-link">Call about SSDI &rarr;</a>
-        </article>
-        <article id="vertical-auto" class="service-card">
-          <div class="icon-wrap"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 16l1.5-5a2 2 0 012-1.5h7a2 2 0 012 1.5L19 16"/><rect x="3" y="16" width="18" height="4" rx="1"/><circle cx="7.5" cy="18" r=".5"/><circle cx="16.5" cy="18" r=".5"/></svg></div>
-          <h3>Auto Insurance Optimization</h3>
-          <p id="auto-copy">Compare coverage options and review your current policy with a licensed insurance professional.</p>
-          <a href="tel:{{PHONE_TEL}}" class="card-link">Call about Auto &rarr;</a>
-        </article>
-        <article id="vertical-home" class="service-card">
-          <div class="icon-wrap"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></div>
-          <h3>Home Insurance Protection</h3>
-          <p id="home-copy">Understand your homeowners coverage and explore options that fit your property and budget.</p>
-          <a href="tel:{{PHONE_TEL}}" class="card-link">Call about Home &rarr;</a>
-        </article>
-        <article id="vertical-pest" class="service-card">
-          <div class="icon-wrap"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="4"/><path d="M12 9V5M8 11L5 8M16 11l3-3M8 15l-3 2M16 15l3 2M12 17v3"/></svg></div>
-          <h3>Commercial Pest Control</h3>
-          <p id="pest-copy">Connect with local pest management providers for inspections and ongoing protection plans.</p>
-          <a href="tel:{{PHONE_TEL}}" class="card-link">Call about Pest Control &rarr;</a>
-        </article>
-        <article id="vertical-debt" class="service-card">
-          <div class="icon-wrap"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg></div>
-          <h3>Debt Relief &amp; Consolidation</h3>
-          <p id="debt-copy">Learn about debt resolution and consolidation options. Results vary and depend on your situation.</p>
-          <a href="tel:{{PHONE_TEL}}" class="card-link">Call about Debt &rarr;</a>
-        </article>
-        <article id="vertical-health" class="service-card">
-          <div class="icon-wrap"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-4.5-9-9a5 5 0 019-3 5 5 0 019 3c-2 4.5-9 9-9 9z"/></svg></div>
-          <h3>Health Insurance Advisory</h3>
-          <p id="health-copy">Talk with a licensed agent about plans available in your state, including Marketplace and Medicare options.</p>
-          <a href="tel:{{PHONE_TEL}}" class="card-link">Call about Health &rarr;</a>
-        </article>
-        <article id="vertical-final" class="service-card lg:col-start-2">
-          <div class="icon-wrap"><svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 8h14"/><path d="M8 21h8"/></svg></div>
-          <h3>Final Expense &amp; Senior Planning</h3>
-          <p id="final-copy">Explore burial and final expense coverage designed to ease the burden on your loved ones.</p>
-          <a href="tel:{{PHONE_TEL}}" class="card-link">Call about Final Expense &rarr;</a>
-        </article>
-      </div>
-    </section>
+<div class="card">
+  <div class="row between" style="margin-bottom:10px">
+    <h2 style="margin:0">Analysis</h2>
+    <select id="win">
+      <option value="10">Last 10</option>
+      <option value="25" selected>Last 25</option>
+      <option value="50">Last 50</option>
+      <option value="100">Last 100</option>
+      <option value="0">All</option>
+    </select>
+  </div>
+  <div id="analysis"></div>
+  <p class="note">Yeh sirf recorded results ka hisaab hai. Har round independent aur random hota hai, isse agla result nahi nikalta.</p>
+</div>
 
-    <section id="how-it-works" class="bg-white border-y border-slate-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-20">
-        <h2 class="text-3xl sm:text-4xl font-bold text-navy-900 text-center">How It Works</h2>
-        <ol class="mt-14 grid gap-8 md:grid-cols-3">
-          <li class="step"><span class="step-num">1</span><h3>Call Us</h3><p id="step-1">Dial {{PHONE_DISPLAY}} and tell our team what you need help with.</p></li>
-          <li class="step"><span class="step-num">2</span><h3>Get Matched</h3><p id="step-2">We connect you with an independent, qualified advisor for your category.</p></li>
-          <li class="step"><span class="step-num">3</span><h3>Decide With Confidence</h3><p id="step-3">Review your options, ask questions, and choose what is right for you. There is no obligation.</p></li>
-        </ol>
-        <div class="mt-12 text-center"><a href="tel:{{PHONE_TEL}}" class="btn-call btn-call-lg">Call {{PHONE_DISPLAY}}</a></div>
-      </div>
-    </section>
+<div class="card">
+  <h2>Recent results</h2>
+  <div class="dots" id="dots"></div>
+</div>
 
-    <section id="about" class="max-w-4xl mx-auto px-4 sm:px-6 py-20 text-center">
-      <h2 class="text-3xl font-bold text-navy-900">About Meridian Allied Consumer Group</h2>
-      <p id="about-copy" class="mt-6 text-charcoal-600 leading-relaxed">Meridian Allied Consumer Group is a private consumer information and referral service. We help people find the right independent professional for their needs. We are not an insurance carrier, law firm, lender, or government agency, and we do not provide legal, financial, or medical advice.</p>
-    </section>
-  </main>
+<div class="card">
+  <div class="row between" style="margin-bottom:8px">
+    <h2 style="margin:0">History log <span id="count" style="color:var(--mute);font-weight:400"></span></h2>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>#</th><th>Number</th><th>Colour</th><th>Size</th><th>Time</th><th></th></tr></thead>
+    <tbody id="log"></tbody>
+  </table></div>
+  <div class="row" style="margin-top:12px">
+    <button class="t" id="exp">Export JSON</button>
+    <button class="t" id="imp">Import JSON</button>
+    <input type="file" id="file" accept="application/json">
+    <button class="t danger" id="clr">Clear all</button>
+  </div>
+</div>
 
-  <footer id="legal" class="bg-charcoal-900 text-slate-300">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 grid gap-10 md:grid-cols-4">
-      <div>
-        <p class="text-white font-bold text-lg">Meridian Allied Consumer Group</p>
-        <address class="mt-4 not-italic text-sm leading-relaxed" id="footer-address">
-          {{STREET_ADDRESS}}<br>{{CITY}}, {{STATE}} {{ZIP}}<br>
-          <a href="tel:{{PHONE_TEL}}">{{PHONE_DISPLAY}}</a><br>
-          <a href="mailto:{{BUSINESS_EMAIL}}">{{BUSINESS_EMAIL}}</a>
-        </address>
-      </div>
-      <nav aria-label="Services footer">
-        <p class="footer-h">Services</p>
-        <ul class="space-y-2 text-sm">
-          <li><a href="index.html#vertical-ssdi">SSDI Support</a></li>
-          <li><a href="index.html#vertical-auto">Auto Insurance</a></li>
-          <li><a href="index.html#vertical-home">Home Insurance</a></li>
-          <li><a href="index.html#vertical-pest">Pest Control</a></li>
-          <li><a href="index.html#vertical-debt">Debt Relief</a></li>
-          <li><a href="index.html#vertical-health">Health Insurance</a></li>
-          <li><a href="index.html#vertical-final">Final Expense</a></li>
-        </ul>
-      </nav>
-      <nav aria-label="Legal footer">
-        <p class="footer-h">Legal</p>
-        <ul class="space-y-2 text-sm">
-          <li><a href="privacy-policy.html">Privacy Policy</a></li>
-          <li><a href="terms-of-use.html">Terms of Use</a></li>
-          <li><a href="dnc-policy.html">Do Not Call Policy</a></li>
-          <li><a href="tcpa-disclosure.html">TCPA Disclosure</a></li>
-          <li><a href="contact.html">Contact Us</a></li>
-        </ul>
-      </nav>
-      <div>
-        <p class="footer-h">Hours</p>
-        <p class="text-sm" id="footer-hours">{{HOURS_OF_OPERATION}}</p>
-      </div>
-    </div>
-    <div class="border-t border-white/10">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-4 text-xs leading-relaxed text-slate-400">
-        <p><strong class="text-slate-200">IMPORTANT NOTICE: NOT A GOVERNMENT AGENCY.</strong> Meridian Allied Consumer Group is a privately owned company. We are <strong>not</strong> affiliated with, endorsed by, sponsored by, or connected to the Social Security Administration (SSA), the Centers for Medicare &amp; Medicaid Services (CMS), HealthCare.gov, the U.S. Department of Health and Human Services, the Internal Revenue Service, or any other federal, state, or local government agency. Information on this website is for general informational purposes only. You may apply for Social Security benefits, Medicare, and Marketplace health coverage directly with the relevant government agency at no cost through <a class="underline" href="https://www.ssa.gov" rel="noopener nofollow" target="_blank">ssa.gov</a>, <a class="underline" href="https://www.medicare.gov" rel="noopener nofollow" target="_blank">medicare.gov</a>, and <a class="underline" href="https://www.healthcare.gov" rel="noopener nofollow" target="_blank">healthcare.gov</a>.</p>
-        <p><strong class="text-slate-200">TCPA / CALL DISCLOSURE.</strong> By calling the number displayed on this website, you acknowledge that your call may be answered by us or by an independent third-party advisor, may be recorded and monitored for quality assurance and compliance, and that call-tracking technology may record your number, the date, time, duration and source of the call. Calling does not grant consent to marketing calls or texts. <a class="underline" href="tcpa-disclosure.html">Read the full disclosure</a>.</p>
-        <p><strong class="text-slate-200">GENERAL.</strong> Meridian Allied Consumer Group is an advertising and referral service. We are not an insurance carrier, insurance agency, law firm, lender, debt settlement company, healthcare provider, or pest control company, and we do not provide legal, tax, financial, insurance, or medical advice. Services are provided by independent third parties who are solely responsible for their own products and services. Availability varies by state. Results and savings are not guaranteed.</p>
-        <p><strong class="text-slate-200">SSDI.</strong> Eligibility for Social Security Disability Insurance is determined solely by the Social Security Administration. We do not guarantee approval of any claim or appeal. Fees for representation in SSDI matters are regulated by federal law and are generally paid only if benefits are awarded. Ask the representative about their fee arrangement before you hire.</p>
-        <p><strong class="text-slate-200">INSURANCE (AUTO, HOME, HEALTH, FINAL EXPENSE).</strong> Insurance products are offered by licensed agents and carriers. Quotes, coverage, rates and eligibility depend on your location, personal details and underwriting. We do not sell insurance. Health and Medicare plans are subject to enrollment periods and eligibility rules. Final expense policies may include waiting periods, age limits and benefit limitations.</p>
-        <p><strong class="text-slate-200">DEBT RELIEF.</strong> Debt relief programs are not suitable for everyone. Results vary by situation and creditor participation. Not all debts qualify. Participation may affect your credit score and may have tax consequences. Under the federal Telemarketing Sales Rule, debt relief providers may not collect fees before a debt has been settled or reduced. Consult a qualified financial or legal professional before enrolling.</p>
-        <p><strong class="text-slate-200">PEST CONTROL.</strong> Services are performed by independent licensed providers. Pricing, methods and guarantees are set by the provider. Confirm licensing and coverage before authorizing service.</p>
-        <p>&copy; <span id="year">2026</span> Meridian Allied Consumer Group. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
-  <a id="mobile-call-bar" href="tel:{{PHONE_TEL}}" class="md:hidden fixed bottom-0 inset-x-0 z-50 btn-call justify-center rounded-none py-4 text-lg">Tap to Call {{PHONE_DISPLAY}}</a>
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script>
+(function(){
+  var KEY = "wingo91_history_v1";
+  var data = [];
+  try { data = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch(e){ data = []; }
+  if(!Array.isArray(data)) data = [];
 
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){} }
+
+  function colourOf(n){
+    if(n===0) return "v0";
+    if(n===5) return "v5";
+    return n%2===0 ? "r" : "g";
+  }
+  function colourLabel(n){
+    if(n===0) return "Red + Violet";
+    if(n===5) return "Green + Violet";
+    return n%2===0 ? "Red" : "Green";
+  }
+  function baseColour(n){ // for colour counting: 0 -> red, 5 -> green, violet counted separately
+    return (n%2===0) ? "Red" : "Green";
+  }
+  function sizeOf(n){ return n>=5 ? "Big" : "Small"; }
+  function pad2(x){ return x<10 ? "0"+x : ""+x; }
+  function fmtTime(ts){ var d=new Date(ts); return pad2(d.getHours())+":"+pad2(d.getMinutes())+":"+pad2(d.getSeconds()); }
+
+  var $ = function(id){ return document.getElementById(id); };
+  var toastTimer;
+  function toast(msg){
+    $("toast").textContent = msg;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ $("toast").textContent=""; }, 2000);
+  }
+
+  // build number pad
+  var pad = $("pad");
+  for(var i=0;i<10;i++){
+    (function(n){
+      var b = document.createElement("button");
+      b.className = "n " + colourOf(n);
+      b.textContent = n;
+      b.setAttribute("aria-label","Add result "+n);
+      b.onclick = function(){
+        data.push({n:n, t:Date.now()});
+        save(); render();
+        toast("Added "+n+" ("+colourLabel(n)+", "+sizeOf(n)+")");
+      };
+      pad.appendChild(b);
+    })(i);
+  }
+
+  $("undo").onclick = function(){
+    if(!data.length) return;
+    var r = data.pop(); save(); render(); toast("Removed "+r.n);
+  };
+
+  function windowed(){
+    var w = parseInt($("win").value,10);
+    return w===0 ? data.slice() : data.slice(-w);
+  }
+
+  function streaks(list, keyFn){
+    if(!list.length) return {cur:0,curKey:"-",max:0,maxKey:"-"};
+    var cur=1, max=1, maxKey=keyFn(list[0]);
+    for(var i=1;i<list.length;i++){
+      if(keyFn(list[i])===keyFn(list[i-1])) cur++; else cur=1;
+      if(cur>max){ max=cur; maxKey=keyFn(list[i]); }
+    }
+    return {cur:cur, curKey:keyFn(list[list.length-1]), max:max, maxKey:maxKey};
+  }
+
+  function renderAnalysis(){
+    var el = $("analysis");
+    var list = windowed();
+    if(!list.length){ el.innerHTML = '<div class="empty">Upar number tap karke result add karo, stats yahan dikhenge.</div>'; return; }
+
+    var total = list.length;
+    var freq = []; for(var i=0;i<10;i++) freq.push(0);
+    var red=0, green=0, violet=0, big=0, small=0;
+    list.forEach(function(r){
+      freq[r.n]++;
+      if(baseColour(r.n)==="Red") red++; else green++;
+      if(r.n===0||r.n===5) violet++;
+      if(r.n>=5) big++; else small++;
+    });
+
+    var maxF = Math.max.apply(null, freq) || 1;
+    var bars = "";
+    for(var n=0;n<10;n++){
+      var c = colourOf(n);
+      var bg = c==="g" ? "var(--green)" : c==="r" ? "var(--red)" :
+        (c==="v0" ? "linear-gradient(180deg,var(--violet),var(--red))" : "linear-gradient(180deg,var(--violet),var(--green))");
+      bars += '<div class="bar"><em>'+freq[n]+'</em><i style="height:'+Math.round(freq[n]/maxF*100)+'%;background:'+bg+'"></i><small>'+n+'</small></div>';
+    }
+
+    function pct(x){ return Math.round(x/total*100); }
+    function split(a,an,ac,b,bn,bc){
+      return '<div class="split"><div style="width:'+pct(a)+'%;background:'+ac+'">'+(pct(a)>=12?pct(a)+'%':'')+'</div>'+
+             '<div style="width:'+pct(b)+'%;background:'+bc+'">'+(pct(b)>=12?pct(b)+'%':'')+'</div></div>'+
+             '<div class="legend"><span>'+an+' '+a+'</span><span>'+bn+' '+b+'</span></div>';
+    }
+
+    var sc = streaks(list, function(r){ return baseColour(r.n); });
+    var ss = streaks(list, function(r){ return sizeOf(r.n); });
+
+    // gap since each number last appeared (within selected window)
+    var last = []; for(i=0;i<10;i++) last.push(-1);
+    list.forEach(function(r,idx){ last[r.n]=idx; });
+    var gaps = last.map(function(p){ return p<0 ? total : total-1-p; });
+    var hot=0, cold=0;
+    for(i=1;i<10;i++){ if(freq[i]>freq[hot]) hot=i; if(freq[i]<freq[cold]) cold=i; }
+
+    el.innerHTML =
+      '<div class="stats">'+
+        '<div class="stat"><b>'+total+'</b><span>Results in window</span></div>'+
+        '<div class="stat"><b>'+list[total-1].n+' · '+colourLabel(list[total-1].n)+'</b><span>Last result</span></div>'+
+        '<div class="stat"><b>'+sc.cur+' × '+sc.curKey+'</b><span>Current colour streak (longest '+sc.max+' × '+sc.maxKey+')</span></div>'+
+        '<div class="stat"><b>'+ss.cur+' × '+ss.curKey+'</b><span>Current size streak (longest '+ss.max+' × '+ss.maxKey+')</span></div>'+
+      '</div>'+
+      '<h2 style="margin-top:14px">Number frequency</h2>'+
+      '<div class="bars">'+bars+'</div>'+
+      '<p class="note">Most seen: '+hot+' ('+freq[hot]+'x) · Least seen: '+cold+' ('+freq[cold]+'x). Sabse zyada gap: number '+gaps.indexOf(Math.max.apply(null,gaps))+' ('+Math.max.apply(null,gaps)+' rounds se nahi aaya).</p>'+
+      '<h2 style="margin-top:14px">Red vs Green</h2>'+
+      split(red,"Red","var(--red)",green,"Green","var(--green)")+
+      '<h2>Big vs Small</h2>'+
+      split(big,"Big","var(--accent)",small,"Small","#4f7cff")+
+      '<p class="note">Violet aaya: '+violet+' baar ('+pct(violet)+'%).</p>';
+  }
+
+  function renderDots(){
+    var d = $("dots");
+    var list = data.slice(-30).reverse();
+    if(!list.length){ d.innerHTML = '<span class="empty">Abhi koi result nahi.</span>'; return; }
+    d.innerHTML = list.map(function(r){ return '<span class="dot '+colourOf(r.n)+'" title="'+colourLabel(r.n)+' / '+sizeOf(r.n)+'">'+r.n+'</span>'; }).join("");
+  }
+
+  function renderLog(){
+    $("count").textContent = "(" + data.length + ")";
+    var body = $("log");
+    if(!data.length){ body.innerHTML = '<tr><td colspan="6" class="empty">Koi entry nahi.</td></tr>'; return; }
+    var rows = "";
+    var shown = data.slice(-100);
+    var offset = data.length - shown.length;
+    for(var i=shown.length-1;i>=0;i--){
+      var r = shown[i], idx = offset+i;
+      rows += '<tr><td>'+(idx+1)+'</td><td><b>'+r.n+'</b></td><td>'+colourLabel(r.n)+'</td><td>'+sizeOf(r.n)+'</td><td>'+fmtTime(r.t)+'</td>'+
+              '<td><button class="t" data-del="'+idx+'" aria-label="Delete entry">✕</button></td></tr>';
+    }
+    body.innerHTML = rows;
+  }
+
+  $("log").addEventListener("click", function(e){
+    var t = e.target.closest("[data-del]");
+    if(!t) return;
+    data.splice(parseInt(t.getAttribute("data-del"),10),1);
+    save(); render();
+  });
+
+  $("win").onchange = renderAnalysis;
+
+  $("exp").onclick = function(){
+    var blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "wingo-history.json";
+    document.body.appendChild(a); a.click(); a.remove();
+  };
+  $("imp").onclick = function(){ $("file").click(); };
+  $("file").onchange = function(){
+    var f = this.files[0]; if(!f) return;
+    var rd = new FileReader();
+    rd.onload = function(){
+      try{
+        var arr = JSON.parse(rd.result);
+        if(!Array.isArray(arr)) throw 0;
+        var clean = arr.filter(function(r){ return r && Number.isInteger(r.n) && r.n>=0 && r.n<=9; })
+                       .map(function(r){ return {n:r.n, t:+r.t||Date.now()}; });
+        data = clean; save(); render(); toast("Imported "+clean.length+" results");
+      }catch(e){ toast("File sahi nahi hai"); }
+    };
+    rd.readAsText(f);
+    this.value = "";
+  };
+  $("clr").onclick = function(){
+    if(!data.length) return;
+    if(confirm("Saara history delete kar dun? Yeh wapas nahi aayega.")){ data=[]; save(); render(); }
+  };
+
+  function render(){ renderAnalysis(); renderDots(); renderLog(); }
+  render();
+})();
+</script>
 </body>
 </html>

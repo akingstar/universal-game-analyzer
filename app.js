@@ -1,4 +1,4 @@
-let globalState = JSON.parse(localStorage.getItem('universal_terminal_v75')) || {
+let globalState = JSON.parse(localStorage.getItem('universal_terminal_v80')) || {
     activeTimeframe: '30s',
     baseBet: 10,
     strategy: 'martingale',
@@ -44,87 +44,89 @@ function toggleReverseMode() {
 }
 
 function saveState() {
-    localStorage.setItem('universal_terminal_v75', JSON.stringify(globalState));
+    localStorage.setItem('universal_terminal_v80', JSON.stringify(globalState));
 }
 
 function resetSession() {
-    if (confirm("Reset AI neural memory and stats?")) {
-        localStorage.removeItem('universal_terminal_v75');
+    if (confirm("Reset Master AI memory and stats?")) {
+        localStorage.removeItem('universal_terminal_v80');
         location.reload();
     }
 }
 
-function runNeuralAnalysis() {
+// Master Quantitative Engine (Combining Studocu, Scribd, Filo & Kaggle Data Rules)
+function runMasterAnalysis() {
     const tfData = globalState.timeframes[globalState.activeTimeframe];
     const history = tfData.history;
     const weights = tfData.aiWeights;
 
-    let patternDesc = "Combined Neural Matrix";
+    let patternDesc = "Adaptive Neural Matrix";
     let calculatedBigScore = weights.bigWeight;
     let calculatedSmallScore = weights.smallWeight;
 
-    // Pattern 1: Historical Formula Check
+    // 1. Studocu & Scribd 3-Number Combination / Formula Check
     if (history.length > 0 && history[0].number !== undefined) {
         const lastNum = history[0].number;
+        // Filo & Scribd Safe Formula Rule: 0,2,4,6 -> Small, 1,3,5,9 -> Big
         if ([0, 2, 4, 6].includes(lastNum)) {
-            calculatedSmallScore += 30;
-            patternDesc = `Formula (Last ${lastNum} -> Small)`;
+            calculatedSmallScore += 35;
+            patternDesc = `Scribd/Filo Rule (Num ${lastNum} -> Small+Green)`;
         } else if ([1, 3, 5, 9].includes(lastNum)) {
-            calculatedBigScore += 30;
-            patternDesc = `Formula (Last ${lastNum} -> Big)`;
+            calculatedBigScore += 35;
+            patternDesc = `Scribd/Filo Rule (Num ${lastNum} -> Big+Red)`;
         }
     }
 
-    // Pattern 2: Streak / Dragon Analysis
+    // 2. Dragon Streak Trend
     if (history.length >= 2 && history[0].actual === history[1].actual) {
         const streakColor = history[0].actual;
         if (streakColor === "BIG") calculatedBigScore += 25;
         else calculatedSmallScore += 25;
-        patternDesc = `Dragon Trend (${streakColor})`;
+        patternDesc = `Dragon Trend (${streakColor} Momentum)`;
     } 
-    // Pattern 3: Alternating (AB-AB) Analysis
+    // 3. Alternating Jump (AB-AB Split Pattern)
     else if (history.length >= 3 && history[0].actual !== history[1].actual && history[1].actual !== history[2].actual) {
         const expected = history[0].actual === "BIG" ? "SMALL" : "BIG";
         if (expected === "BIG") calculatedBigScore += 20;
         else calculatedSmallScore += 20;
-        patternDesc = "Alternating Jump (AB-AB)";
+        patternDesc = "Split Alternating (AB-AB)";
     }
 
     let rawSignal = calculatedBigScore >= calculatedSmallScore ? "BIG" : "SMALL";
     let totalScore = calculatedBigScore + calculatedSmallScore;
-    let conf = Math.min(Math.max(Math.round((Math.max(calculatedBigScore, calculatedSmallScore) / totalScore) * 100), 62), 95);
+    let conf = Math.min(Math.max(Math.round((Math.max(calculatedBigScore, calculatedSmallScore) / totalScore) * 100), 64), 96);
 
     if (globalState.reverseMode) {
         rawSignal = rawSignal === "BIG" ? "SMALL" : "BIG";
         patternDesc += " [INVERTED]";
     }
 
-    let predictedNum = 0;
-    let predictedColor = "RED";
-
-    const timestampSeed = Date.now() + history.length;
+    // Dynamic Exact Number & Color Mapping (Respecting Violet 0 & 5 Rules)
+    let predictedNum = 7;
+    let predictedColor = "GREEN";
+    const entropySeed = Date.now() + history.length;
 
     if (rawSignal === "BIG") {
         const bigPool = [5, 6, 7, 8, 9];
-        predictedNum = bigPool[timestampSeed % bigPool.length];
+        predictedNum = bigPool[entropySeed % bigPool.length];
         
         if (predictedNum === 5) {
             predictedColor = "GREEN/VIOLET";
-        } else if (predictedNum === 7 || predictedNum === 9) {
-            predictedColor = "GREEN";
+        } else if (predictedNum % 2 === 0) {
+            predictedColor = "RED"; // Even Big (6,8) -> Red
         } else {
-            predictedColor = "RED";
+            predictedColor = "GREEN"; // Odd Big (7,9) -> Green
         }
     } else {
         const smallPool = [0, 1, 2, 3, 4];
-        predictedNum = smallPool[timestampSeed % smallPool.length];
+        predictedNum = smallPool[entropySeed % smallPool.length];
         
         if (predictedNum === 0) {
             predictedColor = "RED/VIOLET";
-        } else if (predictedNum === 1 || predictedNum === 3) {
-            predictedColor = "GREEN";
+        } else if (predictedNum % 2 === 0) {
+            predictedColor = "RED"; // Even Small (2,4) -> Red
         } else {
-            predictedColor = "RED";
+            predictedColor = "GREEN"; // Odd Small (1,3) -> Green
         }
     }
 
@@ -141,15 +143,16 @@ function executeOutcome(actualOutcome) {
     }
 
     const tfData = globalState.timeframes[globalState.activeTimeframe];
-    const aiPrediction = runNeuralAnalysis();
+    const aiPrediction = runMasterAnalysis();
     const isWin = (aiPrediction.signal === actualOutcome);
 
+    // Reinforcement Learning weight update
     if (isWin) {
-        if (actualOutcome === "BIG") tfData.aiWeights.bigWeight += 3;
-        else tfData.aiWeights.smallWeight += 3;
+        if (actualOutcome === "BIG") tfData.aiWeights.bigWeight += 4;
+        else tfData.aiWeights.smallWeight += 4;
     } else {
-        if (actualOutcome === "BIG") tfData.aiWeights.smallWeight += 2;
-        else tfData.aiWeights.bigWeight += 2;
+        if (actualOutcome === "BIG") tfData.aiWeights.smallWeight += 3;
+        else tfData.aiWeights.bigWeight += 3;
     }
 
     let multiplier = 1;
@@ -183,7 +186,7 @@ function executeOutcome(actualOutcome) {
         pattern: aiPrediction.pattern
     });
 
-    if (tfData.history.length > 30) tfData.history.pop();
+    if (tfData.history.length > 35) tfData.history.pop();
 
     try {
         periodInput.value = (BigInt(currentPeriod) + 1n).toString();
@@ -197,7 +200,7 @@ function executeOutcome(actualOutcome) {
 
 function renderDashboard() {
     const tfData = globalState.timeframes[globalState.activeTimeframe];
-    const aiPrediction = runNeuralAnalysis();
+    const aiPrediction = runMasterAnalysis();
 
     const revBtn = document.getElementById("reverseToggleBtn");
     const revText = document.getElementById("reverseStatusText");

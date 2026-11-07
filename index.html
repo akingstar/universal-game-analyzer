@@ -53,6 +53,18 @@ th{color:var(--mute);font-weight:500}
 .note{color:var(--mute);font-size:12px;margin-top:8px}
 .empty{color:var(--mute);font-size:13px;padding:6px 0}
 input[type=file]{display:none}
+.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.fields label{display:block;font-size:12px;color:var(--mute)}
+.fields input{width:100%;margin-top:3px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px;font:inherit;font-size:15px}
+.btn{border:0;border-radius:10px;padding:11px 16px;font:inherit;font-weight:600;color:#fff;cursor:pointer;flex:1}
+.btn.lose{background:var(--red)} .btn.win{background:var(--green)}
+.btn:active{transform:scale(.97)}
+.meter{height:10px;border-radius:6px;background:var(--line);overflow:hidden;margin:10px 0 4px}
+.meter div{height:100%;background:var(--accent);width:0}
+.banner{border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px;font-weight:600;display:none}
+.banner.warn{display:block;background:#3a2f12;color:var(--accent)}
+.banner.stop{display:block;background:#3d1a1c;color:#ff8a8e}
+.pos{color:var(--green)} .neg{color:var(--red)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -69,6 +81,33 @@ input[type=file]{display:none}
     <button class="t" id="undo">Undo last</button>
     <span class="note" id="toast" style="margin:0"></span>
   </div>
+</div>
+
+<div class="card" id="sess">
+  <h2>Session tracker (paisa ka hisaab)</h2>
+  <div class="fields">
+    <label>Loss limit ₹<input id="lim" type="number" min="0" inputmode="numeric" placeholder="500"></label>
+    <label>Bet ₹<input id="bet" type="number" min="0" inputmode="numeric" placeholder="10"></label>
+    <label>Wapas mila ₹<input id="ret" type="number" min="0" inputmode="numeric" placeholder="jeet pe"></label>
+  </div>
+  <div class="row">
+    <button class="btn lose" id="sLose">Haara</button>
+    <button class="btn win" id="sWin">Jeeta</button>
+  </div>
+  <div class="meter"><div id="mBar"></div></div>
+  <div class="note" id="mTxt" style="margin-top:0"></div>
+  <div class="stats" style="margin-top:10px">
+    <div class="stat"><b id="sNet">₹0</b><span>Net (jeet minus haar)</span></div>
+    <div class="stat"><b id="sRounds">0</b><span>Rounds · jeet <span id="sWr">0%</span></span></div>
+    <div class="stat"><b id="sStake">₹0</b><span>Total lagaya</span></div>
+    <div class="stat"><b id="sRet">₹0</b><span>Total wapas mila</span></div>
+  </div>
+  <div class="banner" id="sBan"></div>
+  <div class="row" style="margin-top:10px">
+    <button class="t" id="sUndo">Undo last</button>
+    <button class="t danger" id="sReset">Session reset</button>
+  </div>
+  <p class="note">Haara dabane pe bet minus hoti hai. Jeeta me "Wapas mila" me jo total paisa wapas aaya wo daalo. Limit paar hote hi warning aayegi.</p>
 </div>
 
 <div class="card">
@@ -296,6 +335,78 @@ input[type=file]{display:none}
   };
 
   function render(){ renderAnalysis(); renderDots(); renderLog(); }
+  render();
+})();
+</script>
+<script>
+(function(){
+  var KEY = "wingo91_session_v1";
+  var s = {limit:0, bet:0, rounds:[]};
+  try { var x = JSON.parse(localStorage.getItem(KEY) || "null"); if(x && Array.isArray(x.rounds)) s = x; } catch(e){}
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
+  function $(id){ return document.getElementById(id); }
+  function rs(v){ return (v<0?"-":"") + "₹" + Math.abs(Math.round(v*100)/100); }
+  function num(id){ var v = parseFloat($(id).value); return isFinite(v) && v>0 ? v : 0; }
+
+  $("lim").value = s.limit || "";
+  $("bet").value = s.bet || "";
+
+  $("lim").oninput = function(){ s.limit = num("lim"); save(); render(); };
+  $("bet").oninput = function(){ s.bet = num("bet"); save(); };
+
+  $("sLose").onclick = function(){
+    var b = num("bet");
+    if(!b){ $("bet").focus(); return; }
+    s.rounds.push({bet:b, ret:0, t:Date.now()});
+    save(); render();
+  };
+  $("sWin").onclick = function(){
+    var b = num("bet"), r = num("ret");
+    if(!b){ $("bet").focus(); return; }
+    if(!r){ $("ret").focus(); return; }
+    s.rounds.push({bet:b, ret:r, t:Date.now()});
+    $("ret").value = "";
+    save(); render();
+  };
+  $("sUndo").onclick = function(){ s.rounds.pop(); save(); render(); };
+  $("sReset").onclick = function(){
+    if(!s.rounds.length) return;
+    if(confirm("Session ka hisaab zero kar dun?")){ s.rounds = []; save(); render(); }
+  };
+
+  function render(){
+    var stake=0, ret=0, wins=0;
+    s.rounds.forEach(function(r){ stake+=r.bet; ret+=r.ret; if(r.ret>r.bet) wins++; });
+    var net = ret - stake, n = s.rounds.length;
+    var netEl = $("sNet");
+    netEl.textContent = rs(net);
+    netEl.className = net>0 ? "pos" : net<0 ? "neg" : "";
+    $("sRounds").textContent = n;
+    $("sWr").textContent = n ? Math.round(wins/n*100)+"%" : "0%";
+    $("sStake").textContent = rs(stake);
+    $("sRet").textContent = rs(ret);
+
+    var loss = net<0 ? -net : 0;
+    var lim = s.limit;
+    var bar = $("mBar"), txt = $("mTxt"), ban = $("sBan");
+    ban.className = "banner"; ban.textContent = "";
+    if(lim){
+      var p = Math.min(100, Math.round(loss/lim*100));
+      bar.style.width = p + "%";
+      bar.style.background = p>=100 ? "var(--red)" : p>=70 ? "var(--accent)" : "var(--green)";
+      txt.textContent = "Limit use hua: " + rs(loss) + " / " + rs(lim) + " (" + p + "%)";
+      if(loss>=lim){
+        ban.className = "banner stop";
+        ban.textContent = "Loss limit paar ho gayi. Aaj ke liye ruk jao, haar wapas jeetne ke chakkar me bet mat badhao.";
+      } else if(loss>=lim*0.7){
+        ban.className = "banner warn";
+        ban.textContent = "Limit ke paas ho. Sirf " + rs(lim-loss) + " bacha hai.";
+      }
+    } else {
+      bar.style.width = "0"; 
+      txt.textContent = "Loss limit daalo, tabhi warning kaam karegi.";
+    }
+  }
   render();
 })();
 </script>

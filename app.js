@@ -1,4 +1,4 @@
-let globalState = JSON.parse(localStorage.getItem('universal_terminal_v72')) || {
+let globalState = JSON.parse(localStorage.getItem('universal_terminal_v74')) || {
     activeTimeframe: '30s',
     baseBet: 10,
     strategy: 'martingale',
@@ -44,32 +44,47 @@ function toggleReverseMode() {
 }
 
 function saveState() {
-    localStorage.setItem('universal_terminal_v72', JSON.stringify(globalState));
+    localStorage.setItem('universal_terminal_v74', JSON.stringify(globalState));
 }
 
 function resetSession() {
     if (confirm("Reset AI neural memory and stats?")) {
-        localStorage.removeItem('universal_terminal_v72');
+        localStorage.removeItem('universal_terminal_v74');
         location.reload();
     }
 }
 
-// Dynamic Dynamic Number & Color Probability Matrix
+// Integrated Formula + Dynamic Neural Adaptive Matrix
 function runNeuralAnalysis() {
     const tfData = globalState.timeframes[globalState.activeTimeframe];
     const history = tfData.history;
     const weights = tfData.aiWeights;
 
-    let patternDesc = "Adaptive Neural Matrix";
+    let patternDesc = "Formula Mapping Matrix";
     let calculatedBigScore = weights.bigWeight;
     let calculatedSmallScore = weights.smallWeight;
 
+    // Pattern 1: Historical Formula Mapping Check (If last number is logged)
+    if (history.length > 0 && history[0].number !== undefined) {
+        const lastNum = history[0].number;
+        if ([0, 2, 4, 6].includes(lastNum)) {
+            calculatedSmallScore += 30; // Formula Rule: Next likely Small + Green
+            patternDesc = `Formula Map (Last Num ${lastNum} -> Small)`;
+        } else if ([1, 3, 5, 9].includes(lastNum)) {
+            calculatedBigScore += 30; // Formula Rule: Next likely Big + Red
+            patternDesc = `Formula Map (Last Num ${lastNum} -> Big)`;
+        }
+    }
+
+    // Pattern 2: Streak / Dragon Analysis
     if (history.length >= 2 && history[0].actual === history[1].actual) {
         const streakColor = history[0].actual;
         if (streakColor === "BIG") calculatedBigScore += 25;
         else calculatedSmallScore += 25;
         patternDesc = `Dragon Trend (${streakColor})`;
-    } else if (history.length >= 3 && history[0].actual !== history[1].actual && history[1].actual !== history[2].actual) {
+    } 
+    // Pattern 3: Alternating (AB-AB) Analysis
+    else if (history.length >= 3 && history[0].actual !== history[1].actual && history[1].actual !== history[2].actual) {
         const expected = history[0].actual === "BIG" ? "SMALL" : "BIG";
         if (expected === "BIG") calculatedBigScore += 20;
         else calculatedSmallScore += 20;
@@ -78,32 +93,41 @@ function runNeuralAnalysis() {
 
     let rawSignal = calculatedBigScore >= calculatedSmallScore ? "BIG" : "SMALL";
     let totalScore = calculatedBigScore + calculatedSmallScore;
-    let conf = Math.min(Math.max(Math.round((Math.max(calculatedBigScore, calculatedSmallScore) / totalScore) * 100), 60), 94);
+    let conf = Math.min(Math.max(Math.round((Math.max(calculatedBigScore, calculatedSmallScore) / totalScore) * 100), 62), 95);
 
     if (globalState.reverseMode) {
         rawSignal = rawSignal === "BIG" ? "SMALL" : "BIG";
         patternDesc += " [INVERTED]";
     }
 
-    // Dynamic Seed based on Period & History length
-    let seed = history.length + (history.length > 0 ? history[0].period.slice(-3) : 101);
-    seed = parseInt(seed) || 123;
-
+    // Dynamic Seed & Exact Formula Color Assign
     let predictedNum = 0;
-    let predictedColor = "GREEN";
+    let predictedColor = "RED";
+
+    const timestampSeed = Date.now() + history.length;
 
     if (rawSignal === "BIG") {
-        const bigNumbers = [5, 6, 7, 8, 9];
-        predictedNum = bigNumbers[seed % bigNumbers.length];
-        if (predictedNum === 5) predictedColor = "GREEN/VIOLET";
-        else if (predictedNum % 2 === 0) predictedColor = "RED";
-        else predictedColor = "GREEN";
+        const bigPool = [5, 6, 7, 8, 9];
+        predictedNum = bigPool[timestampSeed % bigPool.length];
+        
+        if (predictedNum === 5) {
+            predictedColor = "GREEN/VIOLET";
+        } else if (predictedNum === 7 || predictedNum === 9) {
+            predictedColor = "GREEN";
+        } else {
+            predictedColor = "RED";
+        }
     } else {
-        const smallNumbers = [0, 1, 2, 3, 4];
-        predictedNum = smallNumbers[seed % smallNumbers.length];
-        if (predictedNum === 0) predictedColor = "RED/VIOLET";
-        else if (predictedNum % 2 === 0) predictedColor = "RED";
-        else predictedColor = "GREEN";
+        const smallPool = [0, 1, 2, 3, 4];
+        predictedNum = smallPool[timestampSeed % smallPool.length];
+        
+        if (predictedNum === 0) {
+            predictedColor = "RED/VIOLET";
+        } else if (predictedNum === 1 || predictedNum === 3) {
+            predictedColor = "GREEN";
+        } else {
+            predictedColor = "RED";
+        }
     }
 
     return { signal: rawSignal, number: predictedNum, color: predictedColor, confidence: conf, pattern: patternDesc };
@@ -195,7 +219,14 @@ function renderDashboard() {
     
     const colorEl = document.getElementById("colorSignal");
     colorEl.textContent = aiPrediction.color;
-    colorEl.className = `text-xs font-black px-2.5 py-1 rounded inline-block mt-1 ${aiPrediction.color.includes('GREEN') ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}`;
+    
+    if (aiPrediction.color.includes('GREEN')) {
+        colorEl.className = "text-xs font-black px-2.5 py-1 rounded inline-block mt-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
+    } else if (aiPrediction.color.includes('VIOLET')) {
+        colorEl.className = "text-xs font-black px-2.5 py-1 rounded inline-block mt-1 bg-purple-500/20 text-purple-400 border border-purple-500/30";
+    } else {
+        colorEl.className = "text-xs font-black px-2.5 py-1 rounded inline-block mt-1 bg-rose-500/20 text-rose-400 border border-rose-500/30";
+    }
 
     document.getElementById("detectedPattern").textContent = aiPrediction.pattern;
     document.getElementById("confidenceText").textContent = aiPrediction.confidence + "%";

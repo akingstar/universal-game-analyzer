@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Game Analyzer - Pro Engine</title>
+    <title>Universal Game Analyzer - Pro Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
     <div class="max-w-md mx-auto p-4 sm:p-6 pb-12">
         <!-- Header -->
-        <header class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+        <header class="flex justify-between items-center mb-5 border-b border-slate-800 pb-3">
             <div>
                 <h1 class="text-lg font-black text-emerald-400">UNIVERSAL ANALYZER</h1>
-                <p class="text-xs text-slate-400">Isolated Fast Engine</p>
+                <p class="text-[11px] text-slate-400">Pro Persistent Engine</p>
             </div>
-            <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] font-semibold rounded-full">● Fast Sync</span>
+            <button onclick="resetSession()" class="text-[10px] bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer">🗑️ Reset Session</button>
         </header>
 
         <!-- Main Input Card -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-5 shadow-lg">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-4 shadow-lg">
             <label class="text-xs font-bold text-slate-300 block mb-1.5">Period Number</label>
             <input type="text" id="periodInput" value="20261107100050476" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-emerald-400 font-mono mb-3 focus:outline-none focus:border-emerald-500">
             
@@ -30,19 +30,25 @@
         </div>
 
         <!-- Signal Card -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center mb-5 shadow-lg">
-            <span class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1">AI Next Signal</span>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center mb-4 shadow-lg">
+            <div class="flex justify-between items-center text-[11px] text-slate-400 mb-1 px-1">
+                <span>AI Next Signal</span>
+                <span id="streakBadge" class="px-2 py-0.5 rounded bg-slate-800 text-teal-400 font-mono">Streak: 0</span>
+            </div>
             <div id="signalBox" class="text-4xl font-black text-emerald-400 mb-2">BIG</div>
-            <div class="flex justify-center gap-4 text-xs text-slate-400">
-                <span>Win Rate: <strong id="winRate" class="text-teal-400">0%</strong></span>
-                <span>Net P/L: <strong id="netPL" class="text-slate-200">₹0</strong></span>
+            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/80 text-xs">
+                <div>Win Rate: <strong id="winRate" class="text-teal-400">0%</strong></div>
+                <div>Net P/L: <strong id="netPL" class="text-slate-200">₹0</strong></div>
             </div>
         </div>
 
         <!-- History Log -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-            <h3 class="text-xs font-bold text-slate-400 mb-3 border-b border-slate-800 pb-2">Session History</h3>
-            <div id="historyLog" class="space-y-2 max-h-52 overflow-y-auto pr-1">
+            <h3 class="text-xs font-bold text-slate-400 mb-3 border-b border-slate-800 pb-2 flex justify-between">
+                <span>Session History</span>
+                <span id="totalPlayedCount" class="text-[10px] text-slate-500">Total: 0 rounds</span>
+            </h3>
+            <div id="historyLog" class="space-y-2 max-h-48 overflow-y-auto pr-1">
                 <div class="text-center text-xs text-slate-500 py-3">No rounds recorded yet.</div>
             </div>
         </div>

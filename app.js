@@ -1,4 +1,4 @@
-let globalState = JSON.parse(localStorage.getItem('universal_terminal_v74')) || {
+let globalState = JSON.parse(localStorage.getItem('universal_terminal_v75')) || {
     activeTimeframe: '30s',
     baseBet: 10,
     strategy: 'martingale',
@@ -44,35 +44,34 @@ function toggleReverseMode() {
 }
 
 function saveState() {
-    localStorage.setItem('universal_terminal_v74', JSON.stringify(globalState));
+    localStorage.setItem('universal_terminal_v75', JSON.stringify(globalState));
 }
 
 function resetSession() {
     if (confirm("Reset AI neural memory and stats?")) {
-        localStorage.removeItem('universal_terminal_v74');
+        localStorage.removeItem('universal_terminal_v75');
         location.reload();
     }
 }
 
-// Integrated Formula + Dynamic Neural Adaptive Matrix
 function runNeuralAnalysis() {
     const tfData = globalState.timeframes[globalState.activeTimeframe];
     const history = tfData.history;
     const weights = tfData.aiWeights;
 
-    let patternDesc = "Formula Mapping Matrix";
+    let patternDesc = "Combined Neural Matrix";
     let calculatedBigScore = weights.bigWeight;
     let calculatedSmallScore = weights.smallWeight;
 
-    // Pattern 1: Historical Formula Mapping Check (If last number is logged)
+    // Pattern 1: Historical Formula Check
     if (history.length > 0 && history[0].number !== undefined) {
         const lastNum = history[0].number;
         if ([0, 2, 4, 6].includes(lastNum)) {
-            calculatedSmallScore += 30; // Formula Rule: Next likely Small + Green
-            patternDesc = `Formula Map (Last Num ${lastNum} -> Small)`;
+            calculatedSmallScore += 30;
+            patternDesc = `Formula (Last ${lastNum} -> Small)`;
         } else if ([1, 3, 5, 9].includes(lastNum)) {
-            calculatedBigScore += 30; // Formula Rule: Next likely Big + Red
-            patternDesc = `Formula Map (Last Num ${lastNum} -> Big)`;
+            calculatedBigScore += 30;
+            patternDesc = `Formula (Last ${lastNum} -> Big)`;
         }
     }
 
@@ -100,7 +99,6 @@ function runNeuralAnalysis() {
         patternDesc += " [INVERTED]";
     }
 
-    // Dynamic Seed & Exact Formula Color Assign
     let predictedNum = 0;
     let predictedColor = "RED";
 

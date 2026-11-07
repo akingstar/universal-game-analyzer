@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#090d18"><meta name="description" content="History-based statistical game analyzer">
+  <title>Universal Game Analyzer</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar"><div class="brand"><span class="logo">UG</span><div><b>UNIVERSAL GAME ANALYZER</b><small>HISTORY-BASED STATISTICS</small></div></div><span class="local-tag">LOCAL DATA · PRIVATE</span></header>
+<main class="wrap">
+  <section class="hero"><div><p class="eyebrow">STATISTICAL ANALYSIS WORKSPACE</p><h1>Understand the history.<br><span>Not guess the future.</span></h1><p class="sub">Analyze recorded rounds, frequencies, streaks and patterns. Your data stays in this browser.</p></div><div class="live-card"><div class="status-line"><span id="statusDot" class="dot"></span><span id="statusText">STOPPED</span></div><button id="toggleLive" class="start-btn">▶ START LIVE</button><small>Keep this page open while analyzing</small></div></section>
+  <section class="panel controls"><div class="section-head"><div><p class="eyebrow">01 / SELECT GAME</p><h2>Analysis setup</h2></div><span class="muted">Choose where your history belongs</span></div>
+    <div class="field-grid"><label>Game category<select id="gameType"><option value="aviator">SPRIBE Aviator</option><option value="colour">Colour prediction</option><option value="sports">Sports results (manual)</option></select></label>
+    <label id="platformWrap">Platform<select id="platform"><option>SPRIBE Aviator</option><option>Big Daddy Game</option><option>91 Club</option><option>Tiranga Games</option><option>Daman Games</option><option>Goa Games</option><option>OK Win</option><option>Jalwa Game</option><option>TC Lottery</option><option>Dream 99</option><option>BDG Win</option><option>Other</option></select></label>
+    <label>Analysis window<select id="windowSize"><option value="10">Last 10 results</option><option value="25" selected>Last 25 results</option><option value="50">Last 50 results</option><option value="100">Last 100 results</option><option value="all">All recorded results</option></select></label></div>
+  </section>
+  <section class="stats-grid" id="stats"><article class="stat"><small>RECORDED RESULTS</small><strong id="total">0</strong><span>Selected game</span></article><article class="stat"><small>DATA STATUS</small><strong id="quality">NO DATA</strong><span id="qualityNote">Add results to begin</span></article><article class="stat"><small>LAST RESULT</small><strong id="lastResult">—</strong><span>Most recent entry</span></article><article class="stat"><small>CURRENT STREAK</small><strong id="streak">—</strong><span id="streakNote">Same-result sequence</span></article></section>
+  <section class="panel"><div class="section-head"><div><p class="eyebrow">02 / RECORD HISTORY</p><h2>Add actual result</h2></div><span class="muted">No automatic game-account access</span></div>
+    <form id="resultForm" class="entry-grid"><label id="resultLabel">Crash multiplier<input id="resultValue" type="number" min="1" step="0.01" placeholder="Example: 2.45" required></label><label>Round ID <span class="optional">(optional)</span><input id="roundId" maxlength="80" placeholder="Example: 102938"></label><button class="primary" type="submit">＋ ADD RESULT</button></form>
+    <p id="formHint" class="hint">Enter the actual crash multiplier (minimum 1.00).</p>
+    <div class="toolbar"><button id="exportBtn" class="secondary">↓ Export JSON</button><label class="file-btn">↑ Import JSON<input id="importFile" type="file" accept="application/json,.json" hidden></label><button id="clearBtn" class="danger">Clear selected history</button></div>
+  </section>
+  <section class="panel"><div class="section-head"><div><p class="eyebrow">03 / STATISTICAL VIEW</p><h2>History analysis</h2></div><span class="muted" id="windowLabel">Last 25 results</span></div><div id="analysis" class="analysis-grid"><div class="empty">Add actual results to see statistical analysis.</div></div><div class="notice">Historical frequency describes recorded results only. It is not a prediction, guarantee, or reliable estimate of the next independent round.</div></section>
+  <section class="panel"><div class="section-head"><div><p class="eyebrow">04 / ROUND LOG</p><h2>Recent history</h2></div><span class="muted" id="historyCount">0 entries</span></div><div class="table-wrap"><table><thead><tr><th>#</th><th>Result</th><th>Round ID</th><th>Recorded</th><th></th></tr></thead><tbody id="historyBody"><tr><td colspan="5" class="empty">No results recorded yet.</td></tr></tbody></table></div></section>
+  <footer><b>UNIVERSAL GAME ANALYZER</b><span>Browser-based · No account credentials · No guaranteed outcomes</span></footer>
+</main><script src="app.js"></script></body></html>

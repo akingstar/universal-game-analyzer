@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal AI Terminal - Self-Learning Neural Matrix</title>
+    <title>Universal AI Terminal - Self-Learning Matrix</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-emerald-500 selection:text-slate-950">
@@ -14,7 +14,7 @@
             <div>
                 <div class="flex items-center gap-2">
                     <h1 class="text-lg font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">UNIVERSAL AI TERMINAL</h1>
-                    <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono uppercase">v7.0 Self-Learning</span>
+                    <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono uppercase">v7.1 Fix</span>
                 </div>
                 <p class="text-[10px] text-slate-400">Adaptive Neural Matrix & Full Predictor</p>
             </div>
@@ -42,9 +42,9 @@
                 <div>
                     <label class="text-[10px] text-slate-400 block mb-1">Base Stake (₹)</label>
                     <select id="baseBetSelect" onchange="updateSettings()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-slate-200 font-mono focus:outline-none focus:border-emerald-500 text-xs">
-                        <option value="10">₹10 (Safe)</option>
+                        <option value="10" selected>₹10 (Safe)</option>
                         <option value="50">₹50 (Moderate)</option>
-                        <option value="100" selected>₹100 (Standard)</option>
+                        <option value="100">₹100 (Standard)</option>
                         <option value="500">₹500 (Aggressive)</option>
                     </select>
                 </div>
@@ -62,9 +62,9 @@
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 mb-4 shadow-xl">
             <div class="flex justify-between items-center mb-1.5">
                 <label class="text-xs font-bold text-slate-300">Period Number (<span id="activeModeLabel" class="text-emerald-400">30s</span>)</label>
-                <span class="text-[10px] text-emerald-400 font-mono animate-pulse">● Self-Learning Active</span>
+                <span class="text-[10px] text-emerald-400 font-mono animate-pulse">● Matrix Active</span>
             </div>
-            <input type="text" id="periodInput" value="2026110710501" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-emerald-400 font-mono font-bold mb-3 focus:outline-none focus:border-emerald-500">
+            <input type="text" id="periodInput" value="2026110710503" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-emerald-400 font-mono font-bold mb-3 focus:outline-none focus:border-emerald-500">
             
             <label class="text-[11px] font-bold text-slate-300 block mb-1.5">Log Actual Game Result (Big/Small)</label>
             <div class="grid grid-cols-2 gap-2.5">
@@ -73,35 +73,35 @@
             </div>
         </div>
 
-        <!-- AI Neural Prediction Box (Big/Small + Exact Number + Color) -->
+        <!-- AI Neural Prediction Box -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-4 text-center shadow-xl relative overflow-hidden">
             <div class="flex justify-between items-center text-[10px] text-slate-400 mb-1.5">
-                <span class="font-semibold uppercase tracking-wider">Neural Pattern: <strong id="detectedPattern" class="text-teal-400">Training...</strong></span>
+                <span class="font-semibold uppercase tracking-wider">Neural Pattern: <strong id="detectedPattern" class="text-teal-400">Calculating...</strong></span>
                 <span id="recoveryLevelBadge" class="px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 font-mono text-[9px] border border-amber-500/20">Lvl: 0</span>
             </div>
 
             <div class="py-2 grid grid-cols-3 gap-2 items-center bg-slate-950/80 p-3 rounded-xl border border-slate-800 my-2">
                 <div>
                     <span class="text-[9px] uppercase tracking-wider text-slate-400 block">Size Signal</span>
-                    <div id="signalBox" class="text-2xl font-black text-emerald-400">READY</div>
+                    <div id="signalBox" class="text-2xl font-black text-emerald-400">BIG</div>
                 </div>
                 <div>
                     <span class="text-[9px] uppercase tracking-wider text-slate-400 block">Exact Number</span>
-                    <div id="numberSignal" class="text-3xl font-black text-amber-400 font-mono">-</div>
+                    <div id="numberSignal" class="text-3xl font-black text-amber-400 font-mono">7</div>
                 </div>
                 <div>
                     <span class="text-[9px] uppercase tracking-wider text-slate-400 block">Color Signal</span>
-                    <div id="colorSignal" class="text-xs font-black px-2 py-1 rounded bg-slate-800 text-slate-300 inline-block mt-1">-</div>
+                    <div id="colorSignal" class="text-xs font-black px-2.5 py-1 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 inline-block mt-1">GREEN</div>
                 </div>
             </div>
 
-            <div class="text-[11px] font-bold text-slate-300 mt-2">Suggested Stake: <span id="suggestedStake" class="text-amber-400 font-mono">₹100</span></div>
+            <div class="text-[11px] font-bold text-slate-300 mt-2">Suggested Stake: <span id="suggestedStake" class="text-amber-400 font-mono">₹10</span></div>
 
             <!-- Neural Accuracy Probability Bar -->
             <div class="mt-3 pt-2.5 border-t border-slate-800/80">
                 <div class="flex justify-between text-[10px] text-slate-400 mb-1">
                     <span>Neural AI Confidence Score</span>
-                    <strong id="confidenceText" class="text-emerald-400">0%</strong>
+                    <strong id="confidenceText" class="text-emerald-400">60%</strong>
                 </div>
                 <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-800">
                     <div id="confidenceBar" class="bg-gradient-to-r from-teal-500 to-emerald-400 h-full w-0 transition-all duration-300"></div>
@@ -129,10 +129,10 @@
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5">
             <h3 class="text-xs font-bold text-slate-300 mb-2.5 border-b border-slate-800 pb-2 flex justify-between">
                 <span>Self-Learning Ledger (<span id="historyModeLabel">30s</span>)</span>
-                <span class="text-[9px] text-slate-400 font-normal">Adaptive Neural Weights</span>
+                <span class="text-[9px] text-slate-400 font-normal">Adaptive Weights</span>
             </h3>
             <div id="historyLog" class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-                <div class="text-center text-xs text-slate-500 py-3">No rounds logged yet. AI is waiting for training data.</div>
+                <div class="text-center text-xs text-slate-500 py-3">No rounds logged yet.</div>
             </div>
         </div>
 

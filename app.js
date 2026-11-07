@@ -1,6 +1,6 @@
-let globalState = JSON.parse(localStorage.getItem('universal_terminal_v7')) || {
+let globalState = JSON.parse(localStorage.getItem('universal_terminal_v71')) || {
     activeTimeframe: '30s',
-    baseBet: 100,
+    baseBet: 10,
     strategy: 'martingale',
     reverseMode: false,
     timeframes: {
@@ -11,7 +11,7 @@ let globalState = JSON.parse(localStorage.getItem('universal_terminal_v7')) || {
     }
 };
 
-document.getElementById("baseBetSelect").value = globalState.baseBet || 100;
+document.getElementById("baseBetSelect").value = globalState.baseBet || 10;
 document.getElementById("strategySelect").value = globalState.strategy || 'martingale';
 
 function switchTimeframe(tf) {
@@ -44,40 +44,31 @@ function toggleReverseMode() {
 }
 
 function saveState() {
-    localStorage.setItem('universal_terminal_v7', JSON.stringify(globalState));
+    localStorage.setItem('universal_terminal_v71', JSON.stringify(globalState));
 }
 
 function resetSession() {
     if (confirm("Reset AI neural memory and stats?")) {
-        localStorage.removeItem('universal_terminal_v7');
+        localStorage.removeItem('universal_terminal_v71');
         location.reload();
     }
 }
 
-// Self-Learning Neural Matrix Analyzer (Adapts based on past outcomes)
 function runNeuralAnalysis() {
     const tfData = globalState.timeframes[globalState.activeTimeframe];
     const history = tfData.history;
     const weights = tfData.aiWeights;
 
-    if (history.length === 0) {
-        return { signal: "BIG", number: 7, color: "GREEN", confidence: 50, pattern: "Neural Initial State" };
-    }
-
     let patternDesc = "Adaptive Neural Matrix";
     let calculatedBigScore = weights.bigWeight;
     let calculatedSmallScore = weights.smallWeight;
 
-    // Pattern 1: Streak / Dragon Analysis
     if (history.length >= 2 && history[0].actual === history[1].actual) {
         const streakColor = history[0].actual;
         if (streakColor === "BIG") calculatedBigScore += 25;
         else calculatedSmallScore += 25;
-        patternDesc = `Dragon Trend (${streakColor} Follow)`;
-    }
-
-    // Pattern 2: Alternating (AB-AB) Analysis
-    if (history.length >= 3 && history[0].actual !== history[1].actual && history[1].actual !== history[2].actual) {
+        patternDesc = `Dragon Trend (${streakColor})`;
+    } else if (history.length >= 3 && history[0].actual !== history[1].actual && history[1].actual !== history[2].actual) {
         const expected = history[0].actual === "BIG" ? "SMALL" : "BIG";
         if (expected === "BIG") calculatedBigScore += 20;
         else calculatedSmallScore += 20;
@@ -93,20 +84,18 @@ function runNeuralAnalysis() {
         patternDesc += " [INVERTED]";
     }
 
-    // Exact Number & Color Generation based on Real Game Math Rules
     let predictedNum = 7;
     let predictedColor = "GREEN";
 
     if (rawSignal === "BIG") {
         const bigNumbers = [5, 6, 7, 8, 9];
-        // Self-learning number frequency bias from history
-        predictedNum = bigNumbers[Math.floor(Math.random() * bigNumbers.length)];
+        predictedNum = bigNumbers[(history.length + 2) % bigNumbers.length];
         if (predictedNum === 5) predictedColor = "GREEN/VIOLET";
         else if (predictedNum % 2 === 0) predictedColor = "RED";
         else predictedColor = "GREEN";
     } else {
         const smallNumbers = [0, 1, 2, 3, 4];
-        predictedNum = smallNumbers[Math.floor(Math.random() * smallNumbers.length)];
+        predictedNum = smallNumbers[(history.length + 1) % smallNumbers.length];
         if (predictedNum === 0) predictedColor = "RED/VIOLET";
         else if (predictedNum % 2 === 0) predictedColor = "RED";
         else predictedColor = "GREEN";
@@ -128,7 +117,6 @@ function executeOutcome(actualOutcome) {
     const aiPrediction = runNeuralAnalysis();
     const isWin = (aiPrediction.signal === actualOutcome);
 
-    // Self-Learning Reinforcement Weight Update
     if (isWin) {
         if (actualOutcome === "BIG") tfData.aiWeights.bigWeight += 3;
         else tfData.aiWeights.smallWeight += 3;
@@ -223,7 +211,7 @@ function renderDashboard() {
 
     const logEl = document.getElementById("historyLog");
     if (tfData.history.length === 0) {
-        logEl.innerHTML = `<div class="text-center text-xs text-slate-500 py-3">No rounds logged yet. AI is waiting for training data.</div>`;
+        logEl.innerHTML = `<div class="text-center text-xs text-slate-500 py-3">No rounds logged yet.</div>`;
     } else {
         logEl.innerHTML = tfData.history.map(item => `
             <div class="flex justify-between items-center bg-slate-950/70 p-2.5 rounded-xl border border-slate-800 text-xs">

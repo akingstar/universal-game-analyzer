@@ -1,139 +1,114 @@
-// Persistent AI State Model
-let appState = JSON.parse(localStorage.getItem('ai_auto_analyzer_v4')) || {
-    total: 0,
-    wins: 0,
-    losses: 0,
-    profit: 0,
-    history: [],
+// Multi-Timeframe State Management Engine
+let globalState = JSON.parse(localStorage.getItem('universal_terminal_v5')) || {
+    activeTimeframe: '30s',
     baseBet: 100,
     strategy: 'martingale',
-    recoveryLevel: 0,
-    reverseMode: false
+    reverseMode: false,
+    timeframes: {
+        '30s': { total: 0, wins: 0, losses: 0, profit: 0, history: [], recoveryLevel: 0 },
+        '1m':  { total: 0, wins: 0, losses: 0, profit: 0, history: [], recoveryLevel: 0 },
+        '3m':  { total: 0, wins: 0, losses: 0, profit: 0, history: [], recoveryLevel: 0 },
+        '5m':  { total: 0, wins: 0, losses: 0, profit: 0, history: [], recoveryLevel: 0 }
+    }
 };
 
-// UI Initialization
-document.getElementById("baseBetSelect").value = appState.baseBet || 100;
-document.getElementById("strategySelect").value = appState.strategy || 'martingale';
+// UI Bindings
+document.getElementById("baseBetSelect").value = globalState.baseBet || 100;
+document.getElementById("strategySelect").value = globalState.strategy || 'martingale';
+
+function switchTimeframe(tf) {
+    globalState.activeTimeframe = tf;
+    ['30s', '1m', '3m', '5m'].forEach(m => {
+        const btn = document.getElementById("tab" + m);
+        if (m === tf) {
+            btn.className = "py-2 rounded-lg bg-emerald-500 text-slate-950 transition-all cursor-pointer font-bold shadow-md";
+        } else {
+            btn.className = "py-2 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 transition-all cursor-pointer font-bold";
+        }
+    });
+    document.getElementById("activeModeLabel").textContent = tf;
+    document.getElementById("historyModeLabel").textContent = tf;
+    saveState();
+    renderDashboard();
+}
 
 function updateSettings() {
-    appState.baseBet = parseInt(document.getElementById("baseBetSelect").value);
-    appState.strategy = document.getElementById("strategySelect").value;
+    globalState.baseBet = parseInt(document.getElementById("baseBetSelect").value);
+    globalState.strategy = document.getElementById("strategySelect").value;
     saveState();
     renderDashboard();
 }
 
 function toggleReverseMode() {
-    appState.reverseMode = !appState.reverseMode;
+    globalState.reverseMode = !globalState.reverseMode;
     saveState();
     renderDashboard();
 }
 
 function saveState() {
-    localStorage.setItem('ai_auto_analyzer_v4', JSON.stringify(appState));
+    localStorage.setItem('universal_terminal_v5', JSON.stringify(globalState));
 }
 
 function resetSession() {
-    if (confirm("Reset saara AI trained sequence history aur balance stats?")) {
-        localStorage.removeItem('ai_auto_analyzer_v4');
-        appState = {
-            total: 0,
-            wins: 0,
-            losses: 0,
-            profit: 0,
-            history: [],
-            baseBet: parseInt(document.getElementById("baseBetSelect").value),
-            strategy: document.getElementById("strategySelect").value,
-            recoveryLevel: 0,
-            reverseMode: false
-        };
-        renderDashboard();
+    if (confirm("Reset all timeframe history and stats?")) {
+        localStorage.removeItem('universal_terminal_v5');
+        location.reload();
     }
 }
 
-// Full Autonomous AI Statistical Analysis Engine
-function runAutoAIAnalysis() {
-    const history = appState.history;
-    
-    // Baseline state when no history exists
+// AI Quantitative Pattern Engine
+function analyzeCurrentTimeframe() {
+    const tfData = globalState.timeframes[globalState.activeTimeframe];
+    const history = tfData.history;
+
     if (history.length === 0) {
-        return { signal: "BIG", confidence: 50, pattern: "Baseline AI Default" };
+        return { signal: "BIG", confidence: 50, pattern: "Awaiting Initial Data" };
     }
 
     let bigScore = 0;
     let smallScore = 0;
-    let detectedPattern = "Weighted Hybrid Analysis";
+    let patternType = "Dynamic Trend Weighting";
 
-    // Layer 1: Dragon Trend / Streak Detection
-    if (history.length >= 2) {
-        if (history[0].actual === history[1].actual) {
-            const streakVal = history[0].actual;
-            if (streakVal === "BIG") bigScore += 40;
-            else smallScore += 40;
-            detectedPattern = `Dragon Trend (${streakVal} Streak Follow)`;
-        }
+    // Dragon Trend Check
+    if (history.length >= 2 && history[0].actual === history[1].actual) {
+        const streakColor = history[0].actual;
+        if (streakColor === "BIG") bigScore += 45;
+        else smallScore += 45;
+        patternType = `Dragon Streak (${streakColor} Follow)`;
     }
 
-    // Layer 2: Alternating AB-AB Matrix Analysis
-    if (history.length >= 3) {
-        if (history[0].actual !== history[1].actual && history[1].actual !== history[2].actual) {
-            const nextExpected = history[0].actual === "BIG" ? "SMALL" : "BIG";
-            if (nextExpected === "BIG") bigScore += 35;
-            else smallScore += 35;
-            detectedPattern = "Alternating Jump (AB-AB Pattern)";
-        }
+    // Alternating Jump Check
+    if (history.length >= 3 && history[0].actual !== history[1].actual && history[1].actual !== history[2].actual) {
+        const expected = history[0].actual === "BIG" ? "SMALL" : "BIG";
+        if (expected === "BIG") bigScore += 40;
+        else smallScore += 40;
+        patternType = "Alternating Jump (AB-AB)";
     }
 
-    // Layer 3: Markov Chain & Recent Sample Ratio Analysis (Last 10 Rounds)
-    const sampleSize = Math.min(history.length, 10);
-    let recentBigs = 0;
-    for (let i = 0; i < sampleSize; i++) {
-        if (history[i].actual === "BIG") recentBigs++;
+    // Markov Mean Reversion Check (Last 10)
+    let bigsCount = 0;
+    const sample = Math.min(history.length, 10);
+    for (let i = 0; i < sample; i++) {
+        if (history[i].actual === "BIG") bigsCount++;
     }
-    
-    const bigFrequency = recentBigs / sampleSize;
-    if (bigFrequency >= 0.7) {
-        // High Overbought BIG -> Expect Reversion to SMALL
-        smallScore += 25;
-        if (detectedPattern === "Weighted Hybrid Analysis") detectedPattern = "Mean Reversion (Overbought BIG)";
-    } else if (bigFrequency <= 0.3) {
-        // High Oversold BIG -> Expect Reversion to BIG
-        bigScore += 25;
-        if (detectedPattern === "Weighted Hybrid Analysis") detectedPattern = "Mean Reversion (Oversold BIG)";
+    const ratio = bigsCount / sample;
+    if (ratio >= 0.7) {
+        smallScore += 30;
+        patternType = "Mean Reversion (Overbought)";
+    } else if (ratio <= 0.3) {
+        bigScore += 30;
+        patternType = "Mean Reversion (Oversold)";
     }
 
-    // Final Signal & Confidence Calculation
-    let targetSignal = "BIG";
-    let calculatedConfidence = 50;
+    let rawSignal = bigScore >= smallScore ? "BIG" : "SMALL";
+    let conf = Math.min(Math.max(50 + Math.abs(bigScore - smallScore), 60), 92);
 
-    if (bigScore >= smallScore) {
-        targetSignal = "BIG";
-        calculatedConfidence = Math.min(Math.max(50 + (bigScore - smallScore), 60), 92);
-    } else {
-        targetSignal = "SMALL";
-        calculatedConfidence = Math.min(Math.max(50 + (smallScore - bigScore), 60), 92);
+    if (globalState.reverseMode) {
+        rawSignal = rawSignal === "BIG" ? "SMALL" : "BIG";
+        patternType += " [INVERTED]";
     }
 
-    return {
-        signal: targetSignal,
-        confidence: calculatedConfidence,
-        pattern: detectedPattern
-    };
-}
-
-function getFinalCalculatedPrediction() {
-    const aiBase = runAutoAIAnalysis();
-    let finalSignal = aiBase.signal;
-
-    if (appState.reverseMode) {
-        finalSignal = aiBase.signal === "BIG" ? "SMALL" : "BIG";
-        aiBase.pattern += " [INVERTED]";
-    }
-
-    return {
-        signal: finalSignal,
-        confidence: aiBase.confidence,
-        pattern: aiBase.pattern
-    };
+    return { signal: rawSignal, confidence: conf, pattern: patternType };
 }
 
 function executeOutcome(actualOutcome) {
@@ -145,43 +120,42 @@ function executeOutcome(actualOutcome) {
         return;
     }
 
-    const aiEval = getFinalCalculatedPrediction();
-    const isWin = (aiEval.signal === actualOutcome);
+    const tfData = globalState.timeframes[globalState.activeTimeframe];
+    const ai = analyzeCurrentTimeframe();
+    const isWin = (ai.signal === actualOutcome);
 
-    let currentMultiplier = 1;
-    if (appState.strategy === 'martingale') {
-        currentMultiplier = Math.pow(2, appState.recoveryLevel);
+    let multiplier = 1;
+    if (globalState.strategy === 'martingale') {
+        multiplier = Math.pow(2, tfData.recoveryLevel);
     }
 
-    const stake = appState.baseBet * currentMultiplier;
+    const stake = globalState.baseBet * multiplier;
 
-    appState.total++;
+    tfData.total++;
     if (isWin) {
-        appState.wins++;
-        appState.profit += (stake * 0.95);
-        appState.recoveryLevel = 0; // Reset Martingale on Win
+        tfData.wins++;
+        tfData.profit += (stake * 0.95);
+        tfData.recoveryLevel = 0;
     } else {
-        appState.losses++;
-        appState.profit -= stake;
-        if (appState.strategy === 'martingale') {
-            appState.recoveryLevel = Math.min(appState.recoveryLevel + 1, 4); // Max 4 Levels
+        tfData.losses++;
+        tfData.profit -= stake;
+        if (globalState.strategy === 'martingale') {
+            tfData.recoveryLevel = Math.min(tfData.recoveryLevel + 1, 4);
         }
     }
 
-    // Record Outcome into History Buffer to train future AI rounds
-    appState.history.unshift({
+    tfData.history.unshift({
         period: currentPeriod,
-        predicted: aiEval.signal,
+        predicted: ai.signal,
         actual: actualOutcome,
         win: isWin,
         stake: stake,
-        pattern: aiEval.pattern,
-        reversed: appState.reverseMode
+        pattern: ai.pattern
     });
 
-    if (appState.history.length > 20) appState.history.pop();
+    if (tfData.history.length > 25) tfData.history.pop();
 
-    // Auto Increment Period ID
+    // Auto Increment Period
     try {
         periodInput.value = (BigInt(currentPeriod) + 1n).toString();
     } catch (e) {
@@ -193,55 +167,53 @@ function executeOutcome(actualOutcome) {
 }
 
 function renderDashboard() {
-    const aiData = getFinalCalculatedPrediction();
+    const tfData = globalState.timeframes[globalState.activeTimeframe];
+    const ai = analyzeCurrentTimeframe();
 
-    // Reverse Button UI Update
+    // Reverse Button UI
     const revBtn = document.getElementById("reverseToggleBtn");
     const revText = document.getElementById("reverseStatusText");
-    if (appState.reverseMode) {
-        revBtn.className = "px-3 py-1.5 rounded-xl font-bold text-xs bg-amber-500/20 text-amber-400 border border-amber-500/40 transition-all cursor-pointer flex items-center gap-1.5 shadow-lg shadow-amber-500/10";
-        revText.textContent = "ON (INVERTED)";
+    if (globalState.reverseMode) {
+        revBtn.className = "px-2.5 py-1 rounded-lg font-bold text-[11px] bg-amber-500/20 text-amber-400 border border-amber-500/40 transition-all cursor-pointer flex items-center gap-1 shadow-md";
+        revText.textContent = "ON";
     } else {
-        revBtn.className = "px-3 py-1.5 rounded-xl font-bold text-xs bg-slate-800 text-slate-300 border border-slate-700 transition-all cursor-pointer flex items-center gap-1.5";
+        revBtn.className = "px-2.5 py-1 rounded-lg font-bold text-[11px] bg-slate-800 text-slate-300 border border-slate-700 transition-all cursor-pointer flex items-center gap-1";
         revText.textContent = "OFF";
     }
 
-    // Signal Box
+    // Signal UI
     const sigBox = document.getElementById("signalBox");
-    sigBox.textContent = aiData.signal;
-    sigBox.className = `text-5xl font-black tracking-wide my-1 ${aiData.signal === 'BIG' ? 'text-emerald-400' : 'text-rose-400'}`;
+    sigBox.textContent = ai.signal;
+    sigBox.className = `text-4xl font-black tracking-wide my-1 ${ai.signal === 'BIG' ? 'text-emerald-400' : 'text-rose-400'}`;
 
-    // Confidence Bar & Pattern Text
-    document.getElementById("detectedPattern").textContent = aiData.pattern;
-    document.getElementById("confidenceText").textContent = aiData.confidence + "%";
-    document.getElementById("confidenceBar").style.width = aiData.confidence + "%";
+    document.getElementById("detectedPattern").textContent = ai.pattern;
+    document.getElementById("confidenceText").textContent = ai.confidence + "%";
+    document.getElementById("confidenceBar").style.width = ai.confidence + "%";
 
-    // Stake & Recovery Level
-    const currentMultiplier = (appState.strategy === 'martingale') ? Math.pow(2, appState.recoveryLevel) : 1;
-    const currentStake = appState.baseBet * currentMultiplier;
+    const currentMultiplier = (globalState.strategy === 'martingale') ? Math.pow(2, tfData.recoveryLevel) : 1;
+    const currentStake = globalState.baseBet * currentMultiplier;
     document.getElementById("suggestedStake").textContent = `₹${currentStake}`;
-    document.getElementById("recoveryLevelBadge").textContent = `Recovery Lvl: ${appState.recoveryLevel}`;
+    document.getElementById("recoveryLevelBadge").textContent = `Lvl: ${tfData.recoveryLevel}`;
 
     // Metrics
-    document.getElementById("statTotal").textContent = appState.total;
-    const winRate = appState.total > 0 ? ((appState.wins / appState.total) * 100).toFixed(1) : 0;
+    document.getElementById("statTotal").textContent = tfData.total;
+    const winRate = tfData.total > 0 ? ((tfData.wins / tfData.total) * 100).toFixed(1) : 0;
     document.getElementById("statWinRate").textContent = winRate + "%";
 
     const plEl = document.getElementById("statPL");
-    plEl.textContent = `₹${appState.profit.toFixed(0)}`;
-    plEl.className = `text-base font-black ${appState.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+    plEl.textContent = `₹${tfData.profit.toFixed(0)}`;
+    plEl.className = `text-sm font-black ${tfData.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
 
-    // History Render
+    // History Log
     const logEl = document.getElementById("historyLog");
-    if (appState.history.length === 0) {
-        logEl.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">Waiting for first outcome log...</div>`;
+    if (tfData.history.length === 0) {
+        logEl.innerHTML = `<div class="text-center text-xs text-slate-500 py-3">No rounds logged yet for ${globalState.activeTimeframe}.</div>`;
     } else {
-        logEl.innerHTML = appState.history.map(item => `
-            <div class="flex justify-between items-center bg-slate-950/70 p-2.5 rounded-xl border border-slate-800 text-xs">
+        logEl.innerHTML = tfData.history.map(item => `
+            <div class="flex justify-between items-center bg-slate-950/70 p-2 rounded-xl border border-slate-800 text-xs">
                 <div>
-                    <span class="text-slate-400 font-mono text-[11px]">#${item.period}</span>
-                    <div class="font-bold text-slate-300 mt-0.5">AI Pred: <span class="${item.predicted==='BIG'?'text-emerald-400':'text-rose-400'}">${item.predicted}</span> | Real: ${item.actual} ${item.reversed ? '<span class="text-amber-400 text-[10px]">[Inverted]</span>' : ''}</div>
-                    <span class="text-[9px] text-slate-500">${item.pattern}</span>
+                    <span class="text-slate-400 font-mono text-[10px]">#${item.period}</span>
+                    <div class="font-bold text-slate-300 mt-0.5">Pred: <span class="${item.predicted==='BIG'?'text-emerald-400':'text-rose-400'}">${item.predicted}</span> | Real: ${item.actual}</div>
                 </div>
                 <div class="text-right">
                     <span class="px-2 py-0.5 rounded font-bold text-[10px] ${item.win ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}">
@@ -253,5 +225,5 @@ function renderDashboard() {
     }
 }
 
-// Initial Call
-renderDashboard();
+// Initial Launch Load
+switchTimeframe(globalState.activeTimeframe);

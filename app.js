@@ -1,7 +1,7 @@
 const modes = {
-    30: { interval: 30, timeLeft: 30, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: null, periodId: null },
-    60: { interval: 60, timeLeft: 60, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: null, periodId: null },
-    300: { interval: 300, timeLeft: 300, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: null, periodId: null }
+    30: { interval: 30, timeLeft: 30, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: "BIG", periodId: "" },
+    60: { interval: 60, timeLeft: 60, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: "SMALL", periodId: "" },
+    300: { interval: 300, timeLeft: 300, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: "BIG", periodId: "" }
 };
 
 let activeMode = 30;
@@ -12,18 +12,19 @@ function generatePeriodId(interval) {
     return now.getFullYear().toString() + 
            String(now.getMonth() + 1).padStart(2, '0') + 
            String(now.getDate()).padStart(2, '0') + 
-           interval + "_" + Math.floor(100 + Math.random() * 900);
+           interval + "_" + Math.floor(1000 + Math.random() * 9000);
 }
 
-// Initial Setup
+// Initialize Periods
 [30, 60, 300].forEach(m => {
     modes[m].periodId = generatePeriodId(m);
     modes[m].currentPrediction = Math.random() > 0.5 ? "BIG" : "SMALL";
 });
 
+// Immediate UI sync
 updateUI();
 
-// Global 1-second Interval loop
+// Reliable 1-second interval
 setInterval(() => {
     [30, 60, 300].forEach(m => {
         modes[m].timeLeft--;
@@ -64,9 +65,9 @@ function switchMode(newMode) {
     [30, 60, 300].forEach(m => {
         const btn = document.getElementById("tab" + m);
         if (m === newMode) {
-            btn.className = "py-2.5 rounded-lg bg-emerald-500 text-slate-950 transition-all cursor-pointer font-bold";
+            btn.className = "py-2.5 rounded-lg bg-emerald-500 text-slate-950 transition-all cursor-pointer font-bold shadow-lg shadow-emerald-500/20";
         } else {
-            btn.className = "py-2.5 rounded-lg text-slate-400 hover:text-slate-200 transition-all cursor-pointer font-bold";
+            btn.className = "py-2.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 transition-all cursor-pointer font-bold";
         }
     });
     document.getElementById("modeLabel").textContent = newMode === 30 ? "30s" : newMode === 60 ? "1 Min" : "5 Min";
@@ -93,10 +94,9 @@ function updateUI() {
     sigEl.textContent = data.currentPrediction;
     sigEl.className = `text-4xl font-black mb-3 ${data.currentPrediction === 'BIG' ? 'text-emerald-400' : 'text-rose-400'}`;
 
-    // Update History Log
     const historyLog = document.getElementById("historyLog");
     if (data.history.length === 0) {
-        historyLog.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">Waiting for first completed round...</div>`;
+        historyLog.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">Completed rounds history will appear here...</div>`;
     } else {
         historyLog.innerHTML = data.history.map(item => `
             <div class="flex justify-between items-center p-2.5 rounded-lg border text-xs ${

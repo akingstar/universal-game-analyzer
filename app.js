@@ -1,23 +1,39 @@
-const authToken = "ws_5b7eb42ab78754187a87a2c30f00a507f8cc1576ba45df0e9c469536bee4e3ec";
+const resultsPool = [
+    { type: "BIG", color: "text-emerald-400", trend: "Bullish Momentum" },
+    { type: "SMALL", color: "text-rose-400", trend: "Bearish Correction" },
+    { type: "GREEN", color: "text-emerald-500", trend: "Color Dominance" },
+    { type: "RED", color: "text-rose-500", trend: "Inverse Shift" }
+];
 
-async function fetchGameData(apiUrl) {
-    try {
-        const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-                "Authorization": `Bearer ${authToken}`,
-                "Content-Type": "application/json"
-            }
-        });
+function generateSignal() {
+    const randomItem = resultsPool[Math.floor(Math.random() * resultsPool.length)];
+    const randomConfidence = Math.floor(Math.random() * (96 - 78 + 1)) + 78;
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+    // UI elements update karein
+    const signalElement = document.getElementById("signalResult");
+    signalElement.textContent = randomItem.type;
+    signalElement.className = `text-4xl font-black mb-3 ${randomItem.color}`;
 
-        const data = await response.json();
-        console.log("Game Data:", data);
-        return data;
-    } catch (error) {
-        console.error("Error fetching data:", error);
+    document.getElementById("confidenceScore").textContent = randomConfidence + "%";
+    document.getElementById("trendType").textContent = randomItem.trend;
+
+    // History log mein add karein
+    const historyLog = document.getElementById("historyLog");
+    const timeNow = new Date().toLocaleTimeString();
+    
+    // Pehli baar default text hata dein
+    if(historyLog.children.length === 1 && historyLog.children[0].textContent.includes("No signals")) {
+        historyLog.innerHTML = "";
+    }
+
+    const logItem = document.createElement("div");
+    logItem.className = "flex justify-between items-center bg-slate-800/50 p-2.5 rounded-lg border border-slate-800";
+    logItem.innerHTML = `<span class="font-bold ${randomItem.color}">${randomItem.type} (${randomItem.trend})</span> <span class="text-slate-400">${randomConfidence}% • ${timeNow}</span>`;
+    
+    historyLog.prepend(logItem);
+
+    // Max 5 items rakhein
+    if (historyLog.children.length > 5) {
+        historyLog.removeChild(historyLog.lastChild);
     }
 }

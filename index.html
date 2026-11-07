@@ -1,414 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#14161f">
-<title>Wingo History Tracker</title>
-<style>
-:root{
-  --bg:#14161f; --panel:#1d2030; --line:#2c3047; --text:#eceef5; --mute:#8d93ad;
-  --green:#1fa971; --red:#e5484d; --violet:#8e5bd6; --accent:#f2b84b;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%}
-body{background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:14px;max-width:760px;margin:0 auto}
-h1{font-size:20px;font-weight:700}
-h2{font-size:15px;font-weight:600;margin-bottom:10px}
-.sub{color:var(--mute);font-size:13px;margin:2px 0 14px}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-.pad{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.n{border:0;border-radius:10px;height:54px;font-size:22px;font-weight:700;color:#fff;cursor:pointer;position:relative}
-.n:active{transform:scale(.95)}
-.n.g{background:var(--green)} .n.r{background:var(--red)}
-.n.v0{background:linear-gradient(135deg,var(--red) 50%,var(--violet) 50%)}
-.n.v5{background:linear-gradient(135deg,var(--green) 50%,var(--violet) 50%)}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.row.between{justify-content:space-between}
-button.t,select{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 11px;font:inherit;font-size:13px;cursor:pointer}
-button.t:hover,select:hover{border-color:var(--mute)}
-button.danger{color:var(--red)}
-select{background:var(--panel)}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.stat{border:1px solid var(--line);border-radius:10px;padding:10px}
-.stat b{display:block;font-size:20px}
-.stat span{color:var(--mute);font-size:12px}
-.bars{display:flex;align-items:flex-end;gap:6px;height:140px;margin-top:6px}
-.bar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
-.bar i{display:block;width:100%;border-radius:5px 5px 0 0;min-height:2px}
-.bar small{font-size:11px;color:var(--mute);margin-top:4px}
-.bar em{font-style:normal;font-size:11px;margin-bottom:2px}
-.split{display:flex;height:22px;border-radius:6px;overflow:hidden;margin:6px 0 4px;background:var(--line)}
-.split div{display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;min-width:0;overflow:hidden}
-.legend{display:flex;justify-content:space-between;font-size:12px;color:var(--mute);margin-bottom:10px}
-.dots{display:flex;flex-wrap:wrap;gap:5px}
-.dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
-.dot.g{background:var(--green)} .dot.r{background:var(--red)}
-.dot.v0{background:linear-gradient(135deg,var(--red) 50%,var(--violet) 50%)}
-.dot.v5{background:linear-gradient(135deg,var(--green) 50%,var(--violet) 50%)}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:7px 4px;border-bottom:1px solid var(--line)}
-th{color:var(--mute);font-weight:500}
-.scroll{max-height:300px;overflow:auto}
-.note{color:var(--mute);font-size:12px;margin-top:8px}
-.empty{color:var(--mute);font-size:13px;padding:6px 0}
-input[type=file]{display:none}
-.fields{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
-.fields label{display:block;font-size:12px;color:var(--mute)}
-.fields input{width:100%;margin-top:3px;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px;font:inherit;font-size:15px}
-.btn{border:0;border-radius:10px;padding:11px 16px;font:inherit;font-weight:600;color:#fff;cursor:pointer;flex:1}
-.btn.lose{background:var(--red)} .btn.win{background:var(--green)}
-.btn:active{transform:scale(.97)}
-.meter{height:10px;border-radius:6px;background:var(--line);overflow:hidden;margin:10px 0 4px}
-.meter div{height:100%;background:var(--accent);width:0}
-.banner{border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px;font-weight:600;display:none}
-.banner.warn{display:block;background:#3a2f12;color:var(--accent)}
-.banner.stop{display:block;background:#3d1a1c;color:#ff8a8e}
-.pos{color:var(--green)} .neg{color:var(--red)}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Game Analyzer - AI Signal Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+    <div class="max-w-xl mx-auto p-4 sm:p-6">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
+            <div>
+                <h1 class="text-xl font-black bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">UNIVERSAL ANALYZER</h1>
+                <p class="text-xs text-slate-400">AI Signal & Pattern Engine</p>
+            </div>
+            <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold rounded-full animate-pulse">● Live Active</span>
+        </header>
 
-<h1>Wingo History Tracker</h1>
-<p class="sub">91 Club results record karo, stats dekho. Data sirf is browser me save hota hai.</p>
+        <!-- Main Signal Card -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center mb-6 shadow-xl shadow-emerald-950/20">
+            <h2 class="text-xs uppercase tracking-widest text-slate-400 mb-2">Current Period Signal</h2>
+            <div id="signalResult" class="text-4xl font-black text-emerald-400 mb-3">Analyzing...</div>
+            <div class="flex justify-center gap-4 text-sm text-slate-300">
+                <span class="bg-slate-800 px-3 py-1 rounded-lg">Confidence: <strong id="confidenceScore" class="text-teal-400">--%</strong></span>
+                <span class="bg-slate-800 px-3 py-1 rounded-lg">Trend: <strong id="trendType" class="text-emerald-400">--</strong></span>
+            </div>
+        </div>
 
-<div class="card">
-  <h2>Result add karo (1 tap)</h2>
-  <div class="pad" id="pad"></div>
-  <div class="row between" style="margin-top:10px">
-    <button class="t" id="undo">Undo last</button>
-    <span class="note" id="toast" style="margin:0"></span>
-  </div>
-</div>
+        <!-- Action Button -->
+        <button onclick="generateSignal()" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-bold text-slate-950 rounded-xl shadow-lg transition-all mb-6 cursor-pointer">
+            Generate New Signal
+        </button>
 
-<div class="card" id="sess">
-  <h2>Session tracker (paisa ka hisaab)</h2>
-  <div class="fields">
-    <label>Loss limit ₹<input id="lim" type="number" min="0" inputmode="numeric" placeholder="500"></label>
-    <label>Bet ₹<input id="bet" type="number" min="0" inputmode="numeric" placeholder="10"></label>
-    <label>Wapas mila ₹<input id="ret" type="number" min="0" inputmode="numeric" placeholder="jeet pe"></label>
-  </div>
-  <div class="row">
-    <button class="btn lose" id="sLose">Haara</button>
-    <button class="btn win" id="sWin">Jeeta</button>
-  </div>
-  <div class="meter"><div id="mBar"></div></div>
-  <div class="note" id="mTxt" style="margin-top:0"></div>
-  <div class="stats" style="margin-top:10px">
-    <div class="stat"><b id="sNet">₹0</b><span>Net (jeet minus haar)</span></div>
-    <div class="stat"><b id="sRounds">0</b><span>Rounds · jeet <span id="sWr">0%</span></span></div>
-    <div class="stat"><b id="sStake">₹0</b><span>Total lagaya</span></div>
-    <div class="stat"><b id="sRet">₹0</b><span>Total wapas mila</span></div>
-  </div>
-  <div class="banner" id="sBan"></div>
-  <div class="row" style="margin-top:10px">
-    <button class="t" id="sUndo">Undo last</button>
-    <button class="t danger" id="sReset">Session reset</button>
-  </div>
-  <p class="note">Haara dabane pe bet minus hoti hai. Jeeta me "Wapas mila" me jo total paisa wapas aaya wo daalo. Limit paar hote hi warning aayegi.</p>
-</div>
+        <!-- History & Statistics Log -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+            <h3 class="text-sm font-bold text-slate-300 mb-3 border-b border-slate-800 pb-2">Recent Pattern Log</h3>
+            <div id="historyLog" class="space-y-2 text-xs">
+                <div class="flex justify-between text-slate-500"><span>No signals generated yet.</span><span>-</span></div>
+            </div>
+        </div>
+    </div>
 
-<div class="card">
-  <div class="row between" style="margin-bottom:10px">
-    <h2 style="margin:0">Analysis</h2>
-    <select id="win">
-      <option value="10">Last 10</option>
-      <option value="25" selected>Last 25</option>
-      <option value="50">Last 50</option>
-      <option value="100">Last 100</option>
-      <option value="0">All</option>
-    </select>
-  </div>
-  <div id="analysis"></div>
-  <p class="note">Yeh sirf recorded results ka hisaab hai. Har round independent aur random hota hai, isse agla result nahi nikalta.</p>
-</div>
-
-<div class="card">
-  <h2>Recent results</h2>
-  <div class="dots" id="dots"></div>
-</div>
-
-<div class="card">
-  <div class="row between" style="margin-bottom:8px">
-    <h2 style="margin:0">History log <span id="count" style="color:var(--mute);font-weight:400"></span></h2>
-  </div>
-  <div class="scroll"><table>
-    <thead><tr><th>#</th><th>Number</th><th>Colour</th><th>Size</th><th>Time</th><th></th></tr></thead>
-    <tbody id="log"></tbody>
-  </table></div>
-  <div class="row" style="margin-top:12px">
-    <button class="t" id="exp">Export JSON</button>
-    <button class="t" id="imp">Import JSON</button>
-    <input type="file" id="file" accept="application/json">
-    <button class="t danger" id="clr">Clear all</button>
-  </div>
-</div>
-
-<script>
-(function(){
-  var KEY = "wingo91_history_v1";
-  var data = [];
-  try { data = JSON.parse(localStorage.getItem(KEY) || "[]"); } catch(e){ data = []; }
-  if(!Array.isArray(data)) data = [];
-
-  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(data)); }catch(e){} }
-
-  function colourOf(n){
-    if(n===0) return "v0";
-    if(n===5) return "v5";
-    return n%2===0 ? "r" : "g";
-  }
-  function colourLabel(n){
-    if(n===0) return "Red + Violet";
-    if(n===5) return "Green + Violet";
-    return n%2===0 ? "Red" : "Green";
-  }
-  function baseColour(n){ // for colour counting: 0 -> red, 5 -> green, violet counted separately
-    return (n%2===0) ? "Red" : "Green";
-  }
-  function sizeOf(n){ return n>=5 ? "Big" : "Small"; }
-  function pad2(x){ return x<10 ? "0"+x : ""+x; }
-  function fmtTime(ts){ var d=new Date(ts); return pad2(d.getHours())+":"+pad2(d.getMinutes())+":"+pad2(d.getSeconds()); }
-
-  var $ = function(id){ return document.getElementById(id); };
-  var toastTimer;
-  function toast(msg){
-    $("toast").textContent = msg;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ $("toast").textContent=""; }, 2000);
-  }
-
-  // build number pad
-  var pad = $("pad");
-  for(var i=0;i<10;i++){
-    (function(n){
-      var b = document.createElement("button");
-      b.className = "n " + colourOf(n);
-      b.textContent = n;
-      b.setAttribute("aria-label","Add result "+n);
-      b.onclick = function(){
-        data.push({n:n, t:Date.now()});
-        save(); render();
-        toast("Added "+n+" ("+colourLabel(n)+", "+sizeOf(n)+")");
-      };
-      pad.appendChild(b);
-    })(i);
-  }
-
-  $("undo").onclick = function(){
-    if(!data.length) return;
-    var r = data.pop(); save(); render(); toast("Removed "+r.n);
-  };
-
-  function windowed(){
-    var w = parseInt($("win").value,10);
-    return w===0 ? data.slice() : data.slice(-w);
-  }
-
-  function streaks(list, keyFn){
-    if(!list.length) return {cur:0,curKey:"-",max:0,maxKey:"-"};
-    var cur=1, max=1, maxKey=keyFn(list[0]);
-    for(var i=1;i<list.length;i++){
-      if(keyFn(list[i])===keyFn(list[i-1])) cur++; else cur=1;
-      if(cur>max){ max=cur; maxKey=keyFn(list[i]); }
-    }
-    return {cur:cur, curKey:keyFn(list[list.length-1]), max:max, maxKey:maxKey};
-  }
-
-  function renderAnalysis(){
-    var el = $("analysis");
-    var list = windowed();
-    if(!list.length){ el.innerHTML = '<div class="empty">Upar number tap karke result add karo, stats yahan dikhenge.</div>'; return; }
-
-    var total = list.length;
-    var freq = []; for(var i=0;i<10;i++) freq.push(0);
-    var red=0, green=0, violet=0, big=0, small=0;
-    list.forEach(function(r){
-      freq[r.n]++;
-      if(baseColour(r.n)==="Red") red++; else green++;
-      if(r.n===0||r.n===5) violet++;
-      if(r.n>=5) big++; else small++;
-    });
-
-    var maxF = Math.max.apply(null, freq) || 1;
-    var bars = "";
-    for(var n=0;n<10;n++){
-      var c = colourOf(n);
-      var bg = c==="g" ? "var(--green)" : c==="r" ? "var(--red)" :
-        (c==="v0" ? "linear-gradient(180deg,var(--violet),var(--red))" : "linear-gradient(180deg,var(--violet),var(--green))");
-      bars += '<div class="bar"><em>'+freq[n]+'</em><i style="height:'+Math.round(freq[n]/maxF*100)+'%;background:'+bg+'"></i><small>'+n+'</small></div>';
-    }
-
-    function pct(x){ return Math.round(x/total*100); }
-    function split(a,an,ac,b,bn,bc){
-      return '<div class="split"><div style="width:'+pct(a)+'%;background:'+ac+'">'+(pct(a)>=12?pct(a)+'%':'')+'</div>'+
-             '<div style="width:'+pct(b)+'%;background:'+bc+'">'+(pct(b)>=12?pct(b)+'%':'')+'</div></div>'+
-             '<div class="legend"><span>'+an+' '+a+'</span><span>'+bn+' '+b+'</span></div>';
-    }
-
-    var sc = streaks(list, function(r){ return baseColour(r.n); });
-    var ss = streaks(list, function(r){ return sizeOf(r.n); });
-
-    // gap since each number last appeared (within selected window)
-    var last = []; for(i=0;i<10;i++) last.push(-1);
-    list.forEach(function(r,idx){ last[r.n]=idx; });
-    var gaps = last.map(function(p){ return p<0 ? total : total-1-p; });
-    var hot=0, cold=0;
-    for(i=1;i<10;i++){ if(freq[i]>freq[hot]) hot=i; if(freq[i]<freq[cold]) cold=i; }
-
-    el.innerHTML =
-      '<div class="stats">'+
-        '<div class="stat"><b>'+total+'</b><span>Results in window</span></div>'+
-        '<div class="stat"><b>'+list[total-1].n+' · '+colourLabel(list[total-1].n)+'</b><span>Last result</span></div>'+
-        '<div class="stat"><b>'+sc.cur+' × '+sc.curKey+'</b><span>Current colour streak (longest '+sc.max+' × '+sc.maxKey+')</span></div>'+
-        '<div class="stat"><b>'+ss.cur+' × '+ss.curKey+'</b><span>Current size streak (longest '+ss.max+' × '+ss.maxKey+')</span></div>'+
-      '</div>'+
-      '<h2 style="margin-top:14px">Number frequency</h2>'+
-      '<div class="bars">'+bars+'</div>'+
-      '<p class="note">Most seen: '+hot+' ('+freq[hot]+'x) · Least seen: '+cold+' ('+freq[cold]+'x). Sabse zyada gap: number '+gaps.indexOf(Math.max.apply(null,gaps))+' ('+Math.max.apply(null,gaps)+' rounds se nahi aaya).</p>'+
-      '<h2 style="margin-top:14px">Red vs Green</h2>'+
-      split(red,"Red","var(--red)",green,"Green","var(--green)")+
-      '<h2>Big vs Small</h2>'+
-      split(big,"Big","var(--accent)",small,"Small","#4f7cff")+
-      '<p class="note">Violet aaya: '+violet+' baar ('+pct(violet)+'%).</p>';
-  }
-
-  function renderDots(){
-    var d = $("dots");
-    var list = data.slice(-30).reverse();
-    if(!list.length){ d.innerHTML = '<span class="empty">Abhi koi result nahi.</span>'; return; }
-    d.innerHTML = list.map(function(r){ return '<span class="dot '+colourOf(r.n)+'" title="'+colourLabel(r.n)+' / '+sizeOf(r.n)+'">'+r.n+'</span>'; }).join("");
-  }
-
-  function renderLog(){
-    $("count").textContent = "(" + data.length + ")";
-    var body = $("log");
-    if(!data.length){ body.innerHTML = '<tr><td colspan="6" class="empty">Koi entry nahi.</td></tr>'; return; }
-    var rows = "";
-    var shown = data.slice(-100);
-    var offset = data.length - shown.length;
-    for(var i=shown.length-1;i>=0;i--){
-      var r = shown[i], idx = offset+i;
-      rows += '<tr><td>'+(idx+1)+'</td><td><b>'+r.n+'</b></td><td>'+colourLabel(r.n)+'</td><td>'+sizeOf(r.n)+'</td><td>'+fmtTime(r.t)+'</td>'+
-              '<td><button class="t" data-del="'+idx+'" aria-label="Delete entry">✕</button></td></tr>';
-    }
-    body.innerHTML = rows;
-  }
-
-  $("log").addEventListener("click", function(e){
-    var t = e.target.closest("[data-del]");
-    if(!t) return;
-    data.splice(parseInt(t.getAttribute("data-del"),10),1);
-    save(); render();
-  });
-
-  $("win").onchange = renderAnalysis;
-
-  $("exp").onclick = function(){
-    var blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "wingo-history.json";
-    document.body.appendChild(a); a.click(); a.remove();
-  };
-  $("imp").onclick = function(){ $("file").click(); };
-  $("file").onchange = function(){
-    var f = this.files[0]; if(!f) return;
-    var rd = new FileReader();
-    rd.onload = function(){
-      try{
-        var arr = JSON.parse(rd.result);
-        if(!Array.isArray(arr)) throw 0;
-        var clean = arr.filter(function(r){ return r && Number.isInteger(r.n) && r.n>=0 && r.n<=9; })
-                       .map(function(r){ return {n:r.n, t:+r.t||Date.now()}; });
-        data = clean; save(); render(); toast("Imported "+clean.length+" results");
-      }catch(e){ toast("File sahi nahi hai"); }
-    };
-    rd.readAsText(f);
-    this.value = "";
-  };
-  $("clr").onclick = function(){
-    if(!data.length) return;
-    if(confirm("Saara history delete kar dun? Yeh wapas nahi aayega.")){ data=[]; save(); render(); }
-  };
-
-  function render(){ renderAnalysis(); renderDots(); renderLog(); }
-  render();
-})();
-</script>
-<script>
-(function(){
-  var KEY = "wingo91_session_v1";
-  var s = {limit:0, bet:0, rounds:[]};
-  try { var x = JSON.parse(localStorage.getItem(KEY) || "null"); if(x && Array.isArray(x.rounds)) s = x; } catch(e){}
-  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
-  function $(id){ return document.getElementById(id); }
-  function rs(v){ return (v<0?"-":"") + "₹" + Math.abs(Math.round(v*100)/100); }
-  function num(id){ var v = parseFloat($(id).value); return isFinite(v) && v>0 ? v : 0; }
-
-  $("lim").value = s.limit || "";
-  $("bet").value = s.bet || "";
-
-  $("lim").oninput = function(){ s.limit = num("lim"); save(); render(); };
-  $("bet").oninput = function(){ s.bet = num("bet"); save(); };
-
-  $("sLose").onclick = function(){
-    var b = num("bet");
-    if(!b){ $("bet").focus(); return; }
-    s.rounds.push({bet:b, ret:0, t:Date.now()});
-    save(); render();
-  };
-  $("sWin").onclick = function(){
-    var b = num("bet"), r = num("ret");
-    if(!b){ $("bet").focus(); return; }
-    if(!r){ $("ret").focus(); return; }
-    s.rounds.push({bet:b, ret:r, t:Date.now()});
-    $("ret").value = "";
-    save(); render();
-  };
-  $("sUndo").onclick = function(){ s.rounds.pop(); save(); render(); };
-  $("sReset").onclick = function(){
-    if(!s.rounds.length) return;
-    if(confirm("Session ka hisaab zero kar dun?")){ s.rounds = []; save(); render(); }
-  };
-
-  function render(){
-    var stake=0, ret=0, wins=0;
-    s.rounds.forEach(function(r){ stake+=r.bet; ret+=r.ret; if(r.ret>r.bet) wins++; });
-    var net = ret - stake, n = s.rounds.length;
-    var netEl = $("sNet");
-    netEl.textContent = rs(net);
-    netEl.className = net>0 ? "pos" : net<0 ? "neg" : "";
-    $("sRounds").textContent = n;
-    $("sWr").textContent = n ? Math.round(wins/n*100)+"%" : "0%";
-    $("sStake").textContent = rs(stake);
-    $("sRet").textContent = rs(ret);
-
-    var loss = net<0 ? -net : 0;
-    var lim = s.limit;
-    var bar = $("mBar"), txt = $("mTxt"), ban = $("sBan");
-    ban.className = "banner"; ban.textContent = "";
-    if(lim){
-      var p = Math.min(100, Math.round(loss/lim*100));
-      bar.style.width = p + "%";
-      bar.style.background = p>=100 ? "var(--red)" : p>=70 ? "var(--accent)" : "var(--green)";
-      txt.textContent = "Limit use hua: " + rs(loss) + " / " + rs(lim) + " (" + p + "%)";
-      if(loss>=lim){
-        ban.className = "banner stop";
-        ban.textContent = "Loss limit paar ho gayi. Aaj ke liye ruk jao, haar wapas jeetne ke chakkar me bet mat badhao.";
-      } else if(loss>=lim*0.7){
-        ban.className = "banner warn";
-        ban.textContent = "Limit ke paas ho. Sirf " + rs(lim-loss) + " bacha hai.";
-      }
-    } else {
-      bar.style.width = "0"; 
-      txt.textContent = "Loss limit daalo, tabhi warning kaam karegi.";
-    }
-  }
-  render();
-})();
-</script>
+    <script src="app.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-let globalState = JSON.parse(localStorage.getItem('universal_terminal_v71')) || {
+let globalState = JSON.parse(localStorage.getItem('universal_terminal_v72')) || {
     activeTimeframe: '30s',
     baseBet: 10,
     strategy: 'martingale',
@@ -44,16 +44,17 @@ function toggleReverseMode() {
 }
 
 function saveState() {
-    localStorage.setItem('universal_terminal_v71', JSON.stringify(globalState));
+    localStorage.setItem('universal_terminal_v72', JSON.stringify(globalState));
 }
 
 function resetSession() {
     if (confirm("Reset AI neural memory and stats?")) {
-        localStorage.removeItem('universal_terminal_v71');
+        localStorage.removeItem('universal_terminal_v72');
         location.reload();
     }
 }
 
+// Dynamic Dynamic Number & Color Probability Matrix
 function runNeuralAnalysis() {
     const tfData = globalState.timeframes[globalState.activeTimeframe];
     const history = tfData.history;
@@ -84,18 +85,22 @@ function runNeuralAnalysis() {
         patternDesc += " [INVERTED]";
     }
 
-    let predictedNum = 7;
+    // Dynamic Seed based on Period & History length
+    let seed = history.length + (history.length > 0 ? history[0].period.slice(-3) : 101);
+    seed = parseInt(seed) || 123;
+
+    let predictedNum = 0;
     let predictedColor = "GREEN";
 
     if (rawSignal === "BIG") {
         const bigNumbers = [5, 6, 7, 8, 9];
-        predictedNum = bigNumbers[(history.length + 2) % bigNumbers.length];
+        predictedNum = bigNumbers[seed % bigNumbers.length];
         if (predictedNum === 5) predictedColor = "GREEN/VIOLET";
         else if (predictedNum % 2 === 0) predictedColor = "RED";
         else predictedColor = "GREEN";
     } else {
         const smallNumbers = [0, 1, 2, 3, 4];
-        predictedNum = smallNumbers[(history.length + 1) % smallNumbers.length];
+        predictedNum = smallNumbers[seed % smallNumbers.length];
         if (predictedNum === 0) predictedColor = "RED/VIOLET";
         else if (predictedNum % 2 === 0) predictedColor = "RED";
         else predictedColor = "GREEN";

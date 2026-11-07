@@ -3,84 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Game Analyzer - Exact Matcher</title>
+    <title>Universal Game Analyzer - Fast Sync</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
     <div class="max-w-xl mx-auto p-4 sm:p-6 pb-12">
-        <!-- Header -->
         <header class="flex justify-between items-center mb-6 border-b border-slate-800 pb-4">
             <div>
-                <h1 class="text-xl font-black bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">UNIVERSAL ANALYZER</h1>
-                <p class="text-xs text-slate-400">Exact Period & Result Matcher</p>
+                <h1 class="text-xl font-black text-emerald-400">UNIVERSAL ANALYZER</h1>
+                <p class="text-xs text-slate-400">Fast Match Engine</p>
             </div>
-            <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold rounded-full">● Manual Sync</span>
+            <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-semibold rounded-full">● Online</span>
         </header>
 
-        <!-- Exact Match Input Panel -->
-        <div class="bg-gradient-to-r from-slate-900 to-teal-950/40 border border-teal-500/30 rounded-2xl p-5 mb-6 shadow-xl">
-            <span class="text-xs font-bold text-teal-400 block mb-2">🎯 Real Game Data Entry</span>
-            <div class="space-y-3">
-                <div>
-                    <label class="text-[10px] text-slate-400 block mb-1">Real Game Period No. (Jo game mein dikh raha hai)</label>
-                    <input type="text" id="inputPeriod" placeholder="e.g. 202611071000..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-teal-500 font-mono">
-                </div>
-                <div>
-                    <label class="text-[10px] text-slate-400 block mb-1">Actual Outcome (Jo result aaya)</label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button onclick="submitExactResult('BIG')" class="py-3 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-xl text-xs cursor-pointer shadow-lg shadow-emerald-500/20">BIG</button>
-                        <button onclick="submitExactResult('SMALL')" class="py-3 bg-rose-500 hover:bg-rose-600 text-slate-950 font-black rounded-xl text-xs cursor-pointer shadow-lg shadow-rose-500/20">SMALL</button>
-                    </div>
-                </div>
+        <!-- Input Panel -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-6 shadow-xl">
+            <label class="text-xs font-bold text-slate-300 block mb-2">Current Period Number</label>
+            <input type="text" id="periodInput" value="20261107100050465" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-3 text-sm text-emerald-400 font-mono mb-3 focus:outline-none focus:border-emerald-500">
+            
+            <label class="text-xs font-bold text-slate-300 block mb-2">Select Actual Real Outcome</label>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="recordResult('BIG')" class="py-3.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-xl text-sm cursor-pointer shadow-lg shadow-emerald-500/20">BIG</button>
+                <button onclick="recordResult('SMALL')" class="py-3.5 bg-rose-500 hover:bg-rose-600 text-slate-950 font-black rounded-xl text-sm cursor-pointer shadow-lg shadow-rose-500/20">SMALL</button>
             </div>
         </div>
 
-        <!-- Mode Selector -->
-        <div class="grid grid-cols-3 gap-2 mb-6 bg-slate-900 p-1.5 rounded-xl border border-slate-800 text-xs font-bold text-center">
-            <button onclick="switchMode('30s')" id="tab30s" class="py-2.5 rounded-lg bg-emerald-500 text-slate-950 transition-all cursor-pointer">30 Sec</button>
-            <button onclick="switchMode('1m')" id="tab1m" class="py-2.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 transition-all cursor-pointer">1 Min</button>
-            <button onclick="switchMode('5m')" id="tab5m" class="py-2.5 rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 transition-all cursor-pointer">5 Min</button>
-        </div>
-
-        <!-- Stats Overview Cards -->
-        <div class="grid grid-cols-4 gap-2 mb-6">
-            <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl text-center">
-                <span class="text-[9px] uppercase tracking-wider text-slate-400 block">Total</span>
-                <span id="statTotal" class="text-base font-black text-slate-200">0</span>
-            </div>
-            <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl text-center">
-                <span class="text-[9px] uppercase tracking-wider text-slate-400 block">W / L</span>
-                <span id="statWinLoss" class="text-base font-black text-emerald-400">0/0</span>
-            </div>
-            <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl text-center">
-                <span class="text-[9px] uppercase tracking-wider text-slate-400 block">Net P/L</span>
-                <span id="statProfit" class="text-base font-black text-slate-300">₹0</span>
-            </div>
-            <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-xl text-center">
-                <span class="text-[9px] uppercase tracking-wider text-slate-400 block">Next Bet</span>
-                <span id="recBet" class="text-base font-black text-amber-400">₹100</span>
-            </div>
-        </div>
-
-        <!-- Active Signal Card -->
+        <!-- Prediction Display -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center mb-6 shadow-xl">
-            <h2 class="text-xs uppercase tracking-widest text-slate-400 mb-1">AI Next Round Prediction</h2>
-            <div id="activeSignal" class="text-4xl font-black text-emerald-400 mb-2">ENTER DATA</div>
-            <p id="signalSubtext" class="text-xs text-slate-400">Waiting for real game period entry...</p>
+            <span class="text-xs uppercase tracking-widest text-slate-400 block mb-1">Next AI Signal</span>
+            <div id="signalBox" class="text-5xl font-black text-emerald-400 mb-2">BIG</div>
+            <p class="text-xs text-slate-400">Win Rate: <span id="winRate" class="text-teal-400 font-bold">0%</span> | Net P/L: <span id="netPL" class="text-slate-200 font-bold">₹0</span></p>
         </div>
 
         <!-- History Log -->
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-            <h3 class="text-sm font-bold text-slate-300 mb-3 border-b border-slate-800 pb-2 flex justify-between items-center">
-                <span>Synced History (<span id="modeLabel">30 Sec</span>)</span>
-                <span id="winRateBadge" class="text-xs bg-slate-800 px-2 py-0.5 rounded text-teal-400">Win Rate: 0%</span>
-            </h3>
-            <div id="historyLog" class="space-y-2.5 max-h-80 overflow-y-auto pr-1">
-                <div class="text-center text-xs text-slate-500 py-4">No rounds matched yet.</div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+            <h3 class="text-xs font-bold text-slate-400 mb-3 border-b border-slate-800 pb-2">Matched History Log</h3>
+            <div id="historyLog" class="space-y-2 max-h-60 overflow-y-auto">
+                <div class="text-center text-xs text-slate-500 py-3">No rounds recorded yet.</div>
             </div>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
 </html>

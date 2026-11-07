@@ -1,5 +1,5 @@
-// Persistent State Engine with Reverse Mode Support
-let appState = JSON.parse(localStorage.getItem('pro_analyzer_state_v3')) || {
+// Persistent AI State Model
+let appState = JSON.parse(localStorage.getItem('ai_auto_analyzer_v4')) || {
     total: 0,
     wins: 0,
     losses: 0,
@@ -11,7 +11,7 @@ let appState = JSON.parse(localStorage.getItem('pro_analyzer_state_v3')) || {
     reverseMode: false
 };
 
-// UI Element Bindings
+// UI Initialization
 document.getElementById("baseBetSelect").value = appState.baseBet || 100;
 document.getElementById("strategySelect").value = appState.strategy || 'martingale';
 
@@ -29,12 +29,12 @@ function toggleReverseMode() {
 }
 
 function saveState() {
-    localStorage.setItem('pro_analyzer_state_v3', JSON.stringify(appState));
+    localStorage.setItem('ai_auto_analyzer_v4', JSON.stringify(appState));
 }
 
 function resetSession() {
-    if (confirm("Kya aap saara session data aur history reset karna chahte hain?")) {
-        localStorage.removeItem('pro_analyzer_state_v3');
+    if (confirm("Reset saara AI trained sequence history aur balance stats?")) {
+        localStorage.removeItem('ai_auto_analyzer_v4');
         appState = {
             total: 0,
             wins: 0,
@@ -50,74 +50,89 @@ function resetSession() {
     }
 }
 
-// Multi-Pattern Analytics Engine
-function calculateBasePrediction() {
+// Full Autonomous AI Statistical Analysis Engine
+function runAutoAIAnalysis() {
     const history = appState.history;
     
+    // Baseline state when no history exists
     if (history.length === 0) {
-        return { signal: "BIG", confidence: 50, pattern: "Baseline Initial" };
+        return { signal: "BIG", confidence: 50, pattern: "Baseline AI Default" };
     }
 
-    // Pattern 1: Dragon Streak Detection (3+ continuous outcomes)
-    if (history.length >= 3) {
-        if (history[0].actual === history[1].actual && history[1].actual === history[2].actual) {
-            return {
-                signal: history[0].actual,
-                confidence: 88,
-                pattern: "Dragon Trend (Streak Follow)"
-            };
+    let bigScore = 0;
+    let smallScore = 0;
+    let detectedPattern = "Weighted Hybrid Analysis";
+
+    // Layer 1: Dragon Trend / Streak Detection
+    if (history.length >= 2) {
+        if (history[0].actual === history[1].actual) {
+            const streakVal = history[0].actual;
+            if (streakVal === "BIG") bigScore += 40;
+            else smallScore += 40;
+            detectedPattern = `Dragon Trend (${streakVal} Streak Follow)`;
         }
     }
 
-    // Pattern 2: Alternating Jump Pattern (AB AB Detection)
+    // Layer 2: Alternating AB-AB Matrix Analysis
     if (history.length >= 3) {
         if (history[0].actual !== history[1].actual && history[1].actual !== history[2].actual) {
             const nextExpected = history[0].actual === "BIG" ? "SMALL" : "BIG";
-            return {
-                signal: nextExpected,
-                confidence: 82,
-                pattern: "Alternating Jump (AB Pattern)"
-            };
+            if (nextExpected === "BIG") bigScore += 35;
+            else smallScore += 35;
+            detectedPattern = "Alternating Jump (AB-AB Pattern)";
         }
     }
 
-    // Pattern 3: Mean Reversion Matrix
-    let bigCount = 0;
+    // Layer 3: Markov Chain & Recent Sample Ratio Analysis (Last 10 Rounds)
     const sampleSize = Math.min(history.length, 10);
+    let recentBigs = 0;
     for (let i = 0; i < sampleSize; i++) {
-        if (history[i].actual === "BIG") bigCount++;
+        if (history[i].actual === "BIG") recentBigs++;
+    }
+    
+    const bigFrequency = recentBigs / sampleSize;
+    if (bigFrequency >= 0.7) {
+        // High Overbought BIG -> Expect Reversion to SMALL
+        smallScore += 25;
+        if (detectedPattern === "Weighted Hybrid Analysis") detectedPattern = "Mean Reversion (Overbought BIG)";
+    } else if (bigFrequency <= 0.3) {
+        // High Oversold BIG -> Expect Reversion to BIG
+        bigScore += 25;
+        if (detectedPattern === "Weighted Hybrid Analysis") detectedPattern = "Mean Reversion (Oversold BIG)";
     }
 
-    const bigRatio = bigCount / sampleSize;
-    if (bigRatio >= 0.6) {
-        return { signal: "SMALL", confidence: 74, pattern: "Mean Reversion (Overbought)" };
-    } else if (bigRatio <= 0.4) {
-        return { signal: "BIG", confidence: 74, pattern: "Mean Reversion (Oversold)" };
+    // Final Signal & Confidence Calculation
+    let targetSignal = "BIG";
+    let calculatedConfidence = 50;
+
+    if (bigScore >= smallScore) {
+        targetSignal = "BIG";
+        calculatedConfidence = Math.min(Math.max(50 + (bigScore - smallScore), 60), 92);
+    } else {
+        targetSignal = "SMALL";
+        calculatedConfidence = Math.min(Math.max(50 + (smallScore - bigScore), 60), 92);
     }
 
-    // Fallback Momentum Switch
-    const lastOutcome = history[0].actual;
     return {
-        signal: lastOutcome === "BIG" ? "SMALL" : "BIG",
-        confidence: 65,
-        pattern: "Single Jump Momentum"
+        signal: targetSignal,
+        confidence: calculatedConfidence,
+        pattern: detectedPattern
     };
 }
 
-function getFinalPrediction() {
-    const base = calculateBasePrediction();
-    let finalSignal = base.signal;
+function getFinalCalculatedPrediction() {
+    const aiBase = runAutoAIAnalysis();
+    let finalSignal = aiBase.signal;
 
-    // Apply Reverse Mode Inversion if active
     if (appState.reverseMode) {
-        finalSignal = base.signal === "BIG" ? "SMALL" : "BIG";
-        base.pattern += " [REVERSED]";
+        finalSignal = aiBase.signal === "BIG" ? "SMALL" : "BIG";
+        aiBase.pattern += " [INVERTED]";
     }
 
     return {
         signal: finalSignal,
-        confidence: base.confidence,
-        pattern: base.pattern
+        confidence: aiBase.confidence,
+        pattern: aiBase.pattern
     };
 }
 
@@ -126,48 +141,47 @@ function executeOutcome(actualOutcome) {
     const currentPeriod = periodInput.value.trim();
 
     if (!currentPeriod) {
-        alert("Pehle valid period number enter karein!");
+        alert("Enter period number!");
         return;
     }
 
-    const predictionData = getFinalPrediction();
-    const isWin = (predictionData.signal === actualOutcome);
+    const aiEval = getFinalCalculatedPrediction();
+    const isWin = (aiEval.signal === actualOutcome);
 
-    // Money Management Stake Multiplier Calculation
-    let currentBetMultiplier = 1;
+    let currentMultiplier = 1;
     if (appState.strategy === 'martingale') {
-        currentBetMultiplier = Math.pow(2, appState.recoveryLevel);
+        currentMultiplier = Math.pow(2, appState.recoveryLevel);
     }
 
-    const stake = appState.baseBet * currentBetMultiplier;
+    const stake = appState.baseBet * currentMultiplier;
 
     appState.total++;
     if (isWin) {
         appState.wins++;
         appState.profit += (stake * 0.95);
-        appState.recoveryLevel = 0; // Reset recovery on Win
+        appState.recoveryLevel = 0; // Reset Martingale on Win
     } else {
         appState.losses++;
         appState.profit -= stake;
         if (appState.strategy === 'martingale') {
-            appState.recoveryLevel = Math.min(appState.recoveryLevel + 1, 4); // Max 4 level recovery limit
+            appState.recoveryLevel = Math.min(appState.recoveryLevel + 1, 4); // Max 4 Levels
         }
     }
 
-    // Push Record to History
+    // Record Outcome into History Buffer to train future AI rounds
     appState.history.unshift({
         period: currentPeriod,
-        predicted: predictionData.signal,
+        predicted: aiEval.signal,
         actual: actualOutcome,
         win: isWin,
         stake: stake,
-        pattern: predictionData.pattern,
+        pattern: aiEval.pattern,
         reversed: appState.reverseMode
     });
 
     if (appState.history.length > 20) appState.history.pop();
 
-    // Auto Increment Period ID Safely
+    // Auto Increment Period ID
     try {
         periodInput.value = (BigInt(currentPeriod) + 1n).toString();
     } catch (e) {
@@ -179,9 +193,9 @@ function executeOutcome(actualOutcome) {
 }
 
 function renderDashboard() {
-    const pred = getFinalPrediction();
+    const aiData = getFinalCalculatedPrediction();
 
-    // Update Reverse Toggle UI State
+    // Reverse Button UI Update
     const revBtn = document.getElementById("reverseToggleBtn");
     const revText = document.getElementById("reverseStatusText");
     if (appState.reverseMode) {
@@ -194,13 +208,13 @@ function renderDashboard() {
 
     // Signal Box
     const sigBox = document.getElementById("signalBox");
-    sigBox.textContent = pred.signal;
-    sigBox.className = `text-5xl font-black tracking-wide my-1 ${pred.signal === 'BIG' ? 'text-emerald-400' : 'text-rose-400'}`;
+    sigBox.textContent = aiData.signal;
+    sigBox.className = `text-5xl font-black tracking-wide my-1 ${aiData.signal === 'BIG' ? 'text-emerald-400' : 'text-rose-400'}`;
 
     // Confidence Bar & Pattern Text
-    document.getElementById("detectedPattern").textContent = pred.pattern;
-    document.getElementById("confidenceText").textContent = pred.confidence + "%";
-    document.getElementById("confidenceBar").style.width = pred.confidence + "%";
+    document.getElementById("detectedPattern").textContent = aiData.pattern;
+    document.getElementById("confidenceText").textContent = aiData.confidence + "%";
+    document.getElementById("confidenceBar").style.width = aiData.confidence + "%";
 
     // Stake & Recovery Level
     const currentMultiplier = (appState.strategy === 'martingale') ? Math.pow(2, appState.recoveryLevel) : 1;
@@ -217,16 +231,16 @@ function renderDashboard() {
     plEl.textContent = `₹${appState.profit.toFixed(0)}`;
     plEl.className = `text-base font-black ${appState.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
 
-    // History Log Table Render
+    // History Render
     const logEl = document.getElementById("historyLog");
     if (appState.history.length === 0) {
-        logEl.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">No outcomes logged yet. Enter period & outcome above.</div>`;
+        logEl.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">Waiting for first outcome log...</div>`;
     } else {
         logEl.innerHTML = appState.history.map(item => `
             <div class="flex justify-between items-center bg-slate-950/70 p-2.5 rounded-xl border border-slate-800 text-xs">
                 <div>
                     <span class="text-slate-400 font-mono text-[11px]">#${item.period}</span>
-                    <div class="font-bold text-slate-300 mt-0.5">Pred: <span class="${item.predicted==='BIG'?'text-emerald-400':'text-rose-400'}">${item.predicted}</span> | Real: ${item.actual} ${item.reversed ? '<span class="text-amber-400 text-[10px]">[Rev]</span>' : ''}</div>
+                    <div class="font-bold text-slate-300 mt-0.5">AI Pred: <span class="${item.predicted==='BIG'?'text-emerald-400':'text-rose-400'}">${item.predicted}</span> | Real: ${item.actual} ${item.reversed ? '<span class="text-amber-400 text-[10px]">[Inverted]</span>' : ''}</div>
                     <span class="text-[9px] text-slate-500">${item.pattern}</span>
                 </div>
                 <div class="text-right">

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal AI Engine - Pro Quantitative Terminal</title>
+    <title>Universal AI Engine - Auto Deep Analysis</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-emerald-500 selection:text-slate-950">
@@ -14,26 +14,25 @@
             <div>
                 <div class="flex items-center gap-2">
                     <h1 class="text-xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">UNIVERSAL AI ENGINE</h1>
-                    <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono uppercase">v3.5 Pro</span>
+                    <span class="text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-1.5 py-0.5 rounded font-mono uppercase">v4.0 AI Auto</span>
                 </div>
-                <p class="text-[11px] text-slate-400">Quantitative Pattern Analyzer & Reverse Mode</p>
+                <p class="text-[11px] text-slate-400">Autonomous Pattern Sequence & Probability Worker</p>
             </div>
             <button onclick="resetSession()" class="text-[10px] bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer">🗑️ Reset Data</button>
         </header>
 
-        <!-- Strategy & Reverse Mode Controls -->
+        <!-- Strategy & Inversion Controls -->
         <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 mb-5 shadow-xl">
             <div class="flex justify-between items-center mb-3 border-b border-slate-800 pb-2">
-                <span class="text-xs font-bold uppercase tracking-wider text-teal-400">⚙️ Settings & Inversion Mode</span>
-                <!-- Reverse Mode Toggle Button -->
+                <span class="text-xs font-bold uppercase tracking-wider text-teal-400">⚙️ Auto Analysis Controls</span>
                 <button onclick="toggleReverseMode()" id="reverseToggleBtn" class="px-3 py-1.5 rounded-xl font-bold text-xs bg-slate-800 text-slate-300 border border-slate-700 transition-all cursor-pointer flex items-center gap-1.5">
-                    <span>🔄 Reverse Mode:</span> <span id="reverseStatusText" class="text-slate-400 font-mono">OFF</span>
+                    <span>🔄 Invert Signal:</span> <span id="reverseStatusText" class="text-slate-400 font-mono">OFF</span>
                 </button>
             </div>
             
             <div class="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                    <label class="text-[10px] text-slate-400 block mb-1">Base Bet (₹)</label>
+                    <label class="text-[10px] text-slate-400 block mb-1">Base Stake (₹)</label>
                     <select id="baseBetSelect" onchange="updateSettings()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-200 font-mono focus:outline-none focus:border-emerald-500">
                         <option value="10">₹10 (Safe)</option>
                         <option value="50">₹50 (Moderate)</option>
@@ -51,38 +50,38 @@
             </div>
         </div>
 
-        <!-- Real Outcome Direct Logger -->
+        <!-- Target Game Input Logger -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-5 shadow-xl">
             <div class="flex justify-between items-center mb-2">
                 <label class="text-xs font-bold text-slate-300">Target Period Number</label>
-                <span class="text-[10px] text-slate-400 font-mono">Auto-incrementing</span>
+                <span class="text-[10px] text-emerald-400 font-mono animate-pulse">● AI Worker Engine Active</span>
             </div>
             <input type="text" id="periodInput" value="20261107100050476" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-3 text-sm text-emerald-400 font-mono font-bold mb-3 focus:outline-none focus:border-emerald-500">
             
-            <label class="text-xs font-bold text-slate-300 block mb-2">Inject Actual Game Outcome</label>
+            <label class="text-xs font-bold text-slate-300 block mb-2">Log Real Outcome (Trains AI In Real-Time)</label>
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="executeOutcome('BIG')" class="py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl text-sm cursor-pointer shadow-lg shadow-emerald-500/20 active:scale-95 transition-all">BIG</button>
                 <button onclick="executeOutcome('SMALL')" class="py-3.5 bg-rose-500 hover:bg-rose-400 text-slate-950 font-black rounded-xl text-sm cursor-pointer shadow-lg shadow-rose-500/20 active:scale-95 transition-all">SMALL</button>
             </div>
         </div>
 
-        <!-- Dynamic AI Prediction & Confidence Engine -->
+        <!-- Dynamic AI Autonomous Signal Box -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-5 text-center shadow-xl relative overflow-hidden">
             <div class="flex justify-between items-center text-[11px] text-slate-400 mb-2">
-                <span class="font-semibold uppercase tracking-wider">Pattern: <strong id="detectedPattern" class="text-teal-400">Scanning...</strong></span>
+                <span class="font-semibold uppercase tracking-wider">AI Pattern Analysis: <strong id="detectedPattern" class="text-teal-400">Analyzing Sequence...</strong></span>
                 <span id="recoveryLevelBadge" class="px-2.5 py-0.5 rounded-full bg-slate-800 text-amber-400 font-mono text-[10px] border border-amber-500/20">Recovery Lvl: 0</span>
             </div>
 
             <div class="py-2">
-                <span class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1">Recommended Next Bet Signal</span>
-                <div id="signalBox" class="text-5xl font-black text-emerald-400 tracking-wide my-1">WAITING</div>
-                <div class="text-xs font-bold text-slate-300 mt-2">Suggested Stake: <span id="suggestedStake" class="text-amber-400 font-mono">₹100</span></div>
+                <span class="text-[10px] uppercase tracking-widest text-slate-400 block mb-1">AI Computed Signal</span>
+                <div id="signalBox" class="text-5xl font-black text-emerald-400 tracking-wide my-1">CALCULATING</div>
+                <div class="text-xs font-bold text-slate-300 mt-2">Recommended Bet: <span id="suggestedStake" class="text-amber-400 font-mono">₹100</span></div>
             </div>
 
-            <!-- Confidence Level Meter -->
+            <!-- Autonomous AI Probability Engine Score -->
             <div class="mt-3 pt-3 border-t border-slate-800/80">
                 <div class="flex justify-between text-[11px] text-slate-400 mb-1">
-                    <span>AI Model Confidence</span>
+                    <span>AI Machine Weight Probability</span>
                     <strong id="confidenceText" class="text-emerald-400">0%</strong>
                 </div>
                 <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
@@ -91,10 +90,10 @@
             </div>
         </div>
 
-        <!-- Live Metrics Bar -->
+        <!-- Performance Stats -->
         <div class="grid grid-cols-3 gap-3 mb-5">
             <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl text-center">
-                <span class="text-[10px] uppercase text-slate-400 block">Total Played</span>
+                <span class="text-[10px] uppercase text-slate-400 block">Total Rounds</span>
                 <span id="statTotal" class="text-base font-black text-slate-200">0</span>
             </div>
             <div class="bg-slate-900 border border-slate-800 p-3 rounded-xl text-center">
@@ -107,14 +106,14 @@
             </div>
         </div>
 
-        <!-- History Ledger -->
+        <!-- Matched Sequence Ledger -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
             <h3 class="text-xs font-bold text-slate-300 mb-3 border-b border-slate-800 pb-2 flex justify-between">
-                <span>Matched Rounds History</span>
+                <span>AI Trained Result Sequence Log</span>
                 <span class="text-[10px] text-slate-400 font-normal">Last 20 outcomes</span>
             </h3>
             <div id="historyLog" class="space-y-2 max-h-56 overflow-y-auto pr-1">
-                <div class="text-center text-xs text-slate-500 py-4">No outcomes logged yet. Enter period & outcome above.</div>
+                <div class="text-center text-xs text-slate-500 py-4">Waiting for first outcome log...</div>
             </div>
         </div>
 

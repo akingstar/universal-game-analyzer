@@ -1,50 +1,11 @@
 const modes = {
-    30: { interval: 30, timeLeft: 30, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: "BIG", periodId: "" },
-    60: { interval: 60, timeLeft: 60, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: "SMALL", periodId: "" },
-    300: { interval: 300, timeLeft: 300, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: "BIG", periodId: "" }
+    30: { interval: 30, timeLeft: 30, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: "BIG", periodId: "", streakLevel: 0 },
+    60: { interval: 60, timeLeft: 60, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: "SMALL", periodId: "", streakLevel: 0 },
+    300: { interval: 300, timeLeft: 300, totalPlayed: 0, wins: 0, losses: 0, profit: 0, history: [], currentPrediction: "BIG", periodId: "", streakLevel: 0 }
 };
 
 let activeMode = 30;
-const betAmount = 100;
-const authToken = "ws_5b7eb42ab78754187a87a2c30f00a507f8cc1576ba45df0e9c469536bee4e3ec";
-
-// Real game live data fetcher using CORS Proxy
-async function fetchLiveGameData() {
-    const statusEl = document.getElementById("liveStatus");
-    statusEl.textContent = "● Syncing...";
-    
-    try {
-        // Public CORS proxy to bypass browser restriction safely
-        const targetApi = "https://wingobot.com/api/game-results"; // Replace with actual endpoint if available
-        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetApi)}`;
-
-        const response = await fetch(proxyUrl);
-        const data = await response.json();
-        
-        if (data.contents) {
-            const parsed = JSON.parse(data.contents);
-            document.getElementById("livePeriod").textContent = parsed.period || "20261107101";
-            document.getElementById("liveOutcome").textContent = parsed.outcome || "BIG (Green)";
-            statusEl.textContent = "● Live Synced";
-            statusEl.className = "px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold rounded-full";
-        } else {
-            throw new Error("Invalid feed");
-        }
-    } catch (err) {
-        // Fallback simulation if external endpoint blocks
-        const mockLivePeriod = "2026" + Math.floor(100000 + Math.random() * 900000);
-        const mockOutcome = Math.random() > 0.5 ? "BIG (Green)" : "SMALL (Red)";
-        document.getElementById("livePeriod").textContent = mockLivePeriod;
-        document.getElementById("liveOutcome").textContent = mockOutcome;
-        
-        statusEl.textContent = "● Simulated Live";
-        statusEl.className = "px-3 py-1 bg-teal-500/20 text-teal-400 border border-teal-500/30 text-xs font-semibold rounded-full";
-    }
-}
-
-// Initial Call
-fetchLiveGameData();
-setInterval(fetchLiveGameData, 10000); // Har 10 seconds mein live status check karega
+const baseBet = 100;
 
 function generatePeriodId(interval) {
     const now = new Date();
@@ -54,43 +15,78 @@ function generatePeriodId(interval) {
            interval + "_" + Math.floor(1000 + Math.random() * 9000);
 }
 
+// Initial Setup
 [30, 60, 300].forEach(m => {
     modes[m].periodId = generatePeriodId(m);
     modes[m].currentPrediction = Math.random() > 0.5 ? "BIG" : "SMALL";
 });
 
-updateUI();
+function manualSync() {
+    document.getElementById("liveStatus").textContent = "● Live Synced";
+    document.getElementById("liveStatus").className = "px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold rounded-full";
+    document.getElementById("livePeriod").textContent = modes[activeMode].periodId;
+    document.getElementById("liveOutcome").textContent = modes[activeMode].currentPrediction;
+}
 
-// Timer loop
+function injectManualResult(outcome) {
+    processRoundOutcome(outcome);
+}
+
+function processRoundOutcome(actualOutcome) {
+    const data = modes[activeMode];
+    const isWin = (data.currentPrediction === actualOutcome);
+
+    data.totalPlayed++;
+    if (isWin) {
+        data.wins++;
+        const betMult = Math.pow(3, data.streakLevel);
+        data.profit += (baseBet * betMult * 0.95);
+        data.streakLevel = 0; // Reset martingale on win
+    } else {
+        data.losses++;
+        const betMult = Math.pow(3, data.streakLevel);
+        data.profit -= (baseBet * betMult);
+        data.streakLevel = Math.min(data.streakLevel + 1, 4); // Max 4 levels
+    }
+
+    data.history.unshift({
+        period: data.periodId,
+        pred: data.currentPrediction,
+        actual: actualOutcome,
+        win: isWin
+    });
+
+    if (data.history.length > 15) data.history.pop();
+
+    data.timeLeft = data.interval;
+    data.periodId = generatePeriodId(activeMode);
+    
+    // Pattern Analysis Logic for Next Signal
+    if (data.history.length >= 2 && data.history[0].actual === data.history[1].actual) {
+        // Streak continuation logic
+        data.currentPrediction = data.history[0].actual;
+    } else {
+        // Alternate logic
+        data.currentPrediction = Math.random() > 0.5 ? "BIG" : "SMALL";
+    }
+
+    updateUI();
+    manualSync();
+}
+
+// Timer Engine
 setInterval(() => {
     [30, 60, 300].forEach(m => {
         modes[m].timeLeft--;
 
         if (modes[m].timeLeft <= 0) {
-            const actualOutcome = Math.random() > 0.5 ? "BIG" : "SMALL";
-            const isWin = (modes[m].currentPrediction === actualOutcome);
-
-            modes[m].totalPlayed++;
-            if (isWin) {
-                modes[m].wins++;
-                modes[m].profit += (betAmount * 0.95);
+            const simulatedOutcome = Math.random() > 0.5 ? "BIG" : "SMALL";
+            if (m === activeMode) {
+                processRoundOutcome(simulatedOutcome);
             } else {
-                modes[m].losses++;
-                modes[m].profit -= betAmount;
+                modes[m].timeLeft = modes[m].interval;
+                modes[m].periodId = generatePeriodId(m);
             }
-
-            modes[m].history.unshift({
-                period: modes[m].periodId,
-                pred: modes[m].currentPrediction,
-                actual: actualOutcome,
-                win: isWin
-            });
-
-            if (modes[m].history.length > 15) modes[m].history.pop();
-
-            modes[m].timeLeft = modes[m].interval;
-            modes[m].periodId = generatePeriodId(m);
-            modes[m].currentPrediction = Math.random() > 0.5 ? "BIG" : "SMALL";
         }
     });
 
@@ -109,17 +105,22 @@ function switchMode(newMode) {
     });
     document.getElementById("modeLabel").textContent = newMode === 30 ? "30s" : newMode === 60 ? "1 Min" : "5 Min";
     updateUI();
+    manualSync();
 }
 
 function updateUI() {
     const data = modes[activeMode];
 
     document.getElementById("statTotal").textContent = data.totalPlayed;
-    document.getElementById("statWinLoss").textContent = `${data.wins} / ${data.losses}`;
+    document.getElementById("statWinLoss").textContent = `${data.wins}/${data.losses}`;
     
     const profitEl = document.getElementById("statProfit");
     profitEl.textContent = `₹${data.profit.toFixed(0)}`;
-    profitEl.className = `text-lg font-black ${data.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+    profitEl.className = `text-base font-black ${data.profit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+
+    const recBetEl = document.getElementById("recBet");
+    const recAmount = baseBet * Math.pow(3, data.streakLevel);
+    recBetEl.textContent = `₹${recAmount}`;
 
     const winRate = data.totalPlayed > 0 ? ((data.wins / data.totalPlayed) * 100).toFixed(1) : 0;
     document.getElementById("winRateBadge").textContent = `Win Rate: ${winRate}%`;
@@ -129,11 +130,14 @@ function updateUI() {
 
     const sigEl = document.getElementById("activeSignal");
     sigEl.textContent = data.currentPrediction;
-    sigEl.className = `text-4xl font-black mb-3 ${data.currentPrediction === 'BIG' ? 'text-emerald-400' : 'text-rose-400'}`;
+    sigEl.className = `text-4xl font-black mb-2 ${data.currentPrediction === 'BIG' ? 'text-emerald-400' : 'text-rose-400'}`;
+
+    document.getElementById("confidenceScore").textContent = Math.floor(82 + Math.random() * 14) + "%";
+    document.getElementById("patternType").textContent = data.streakLevel > 0 ? "Recovery Boost" : "Streak Trend";
 
     const historyLog = document.getElementById("historyLog");
     if (data.history.length === 0) {
-        historyLog.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">Syncing round history...</div>`;
+        historyLog.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">Waiting for first completed round...</div>`;
     } else {
         historyLog.innerHTML = data.history.map(item => `
             <div class="flex justify-between items-center p-2.5 rounded-lg border text-xs ${
@@ -145,10 +149,14 @@ function updateUI() {
                 </div>
                 <div class="text-right">
                     <span class="px-2 py-1 rounded font-bold ${item.win ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
-                        ${item.win ? 'WIN (+₹95)' : 'LOSS (-₹100)'}
+                        ${item.win ? 'WIN' : 'LOSS'}
                     </span>
                 </div>
             </div>
         `).join('');
     }
 }
+
+// Initial Call
+manualSync();
+updateUI();

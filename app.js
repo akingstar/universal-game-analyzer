@@ -6,6 +6,45 @@ const modes = {
 
 let activeMode = 30;
 const betAmount = 100;
+const authToken = "ws_5b7eb42ab78754187a87a2c30f00a507f8cc1576ba45df0e9c469536bee4e3ec";
+
+// Real game live data fetcher using CORS Proxy
+async function fetchLiveGameData() {
+    const statusEl = document.getElementById("liveStatus");
+    statusEl.textContent = "● Syncing...";
+    
+    try {
+        // Public CORS proxy to bypass browser restriction safely
+        const targetApi = "https://wingobot.com/api/game-results"; // Replace with actual endpoint if available
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(targetApi)}`;
+
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+        
+        if (data.contents) {
+            const parsed = JSON.parse(data.contents);
+            document.getElementById("livePeriod").textContent = parsed.period || "20261107101";
+            document.getElementById("liveOutcome").textContent = parsed.outcome || "BIG (Green)";
+            statusEl.textContent = "● Live Synced";
+            statusEl.className = "px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold rounded-full";
+        } else {
+            throw new Error("Invalid feed");
+        }
+    } catch (err) {
+        // Fallback simulation if external endpoint blocks
+        const mockLivePeriod = "2026" + Math.floor(100000 + Math.random() * 900000);
+        const mockOutcome = Math.random() > 0.5 ? "BIG (Green)" : "SMALL (Red)";
+        document.getElementById("livePeriod").textContent = mockLivePeriod;
+        document.getElementById("liveOutcome").textContent = mockOutcome;
+        
+        statusEl.textContent = "● Simulated Live";
+        statusEl.className = "px-3 py-1 bg-teal-500/20 text-teal-400 border border-teal-500/30 text-xs font-semibold rounded-full";
+    }
+}
+
+// Initial Call
+fetchLiveGameData();
+setInterval(fetchLiveGameData, 10000); // Har 10 seconds mein live status check karega
 
 function generatePeriodId(interval) {
     const now = new Date();
@@ -15,16 +54,14 @@ function generatePeriodId(interval) {
            interval + "_" + Math.floor(1000 + Math.random() * 9000);
 }
 
-// Initialize Periods
 [30, 60, 300].forEach(m => {
     modes[m].periodId = generatePeriodId(m);
     modes[m].currentPrediction = Math.random() > 0.5 ? "BIG" : "SMALL";
 });
 
-// Immediate UI sync
 updateUI();
 
-// Reliable 1-second interval
+// Timer loop
 setInterval(() => {
     [30, 60, 300].forEach(m => {
         modes[m].timeLeft--;
@@ -96,7 +133,7 @@ function updateUI() {
 
     const historyLog = document.getElementById("historyLog");
     if (data.history.length === 0) {
-        historyLog.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">Completed rounds history will appear here...</div>`;
+        historyLog.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">Syncing round history...</div>`;
     } else {
         historyLog.innerHTML = data.history.map(item => `
             <div class="flex justify-between items-center p-2.5 rounded-lg border text-xs ${

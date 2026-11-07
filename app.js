@@ -1,4 +1,4 @@
-let globalState = JSON.parse(localStorage.getItem('universal_terminal_v85')) || {
+let globalState = JSON.parse(localStorage.getItem('universal_terminal_v90')) || {
     activeTimeframe: '30s',
     baseBet: 10,
     strategy: 'martingale',
@@ -44,64 +44,61 @@ function toggleReverseMode() {
 }
 
 function saveState() {
-    localStorage.setItem('universal_terminal_v85', JSON.stringify(globalState));
+    localStorage.setItem('universal_terminal_v90', JSON.stringify(globalState));
 }
 
 function resetSession() {
     if (confirm("Reset Master AI memory and stats?")) {
-        localStorage.removeItem('universal_terminal_v85');
+        localStorage.removeItem('universal_terminal_v90');
         location.reload();
     }
 }
 
-// Unified Master Quant Engine (Studocu + Scribd + Filo + Reinforcement)
+// Master Algorithmic Analysis Engine (Studocu + Scribd + Filo + Pattern Triggers)
 function runMasterAnalysis() {
     const tfData = globalState.timeframes[globalState.activeTimeframe];
     const history = tfData.history;
     const weights = tfData.aiWeights;
 
-    let patternDesc = "Master Adaptive Neural Matrix";
+    let patternDesc = "Adaptive Neural Matrix";
     let calculatedBigScore = weights.bigWeight;
     let calculatedSmallScore = weights.smallWeight;
 
-    // 1. Studocu & Scribd 3-Number Sequence Lookup / Filo Rule Check
+    // 1. Safe Formula / Parity Rule Check (Filo / Scribd Guide)
     if (history.length > 0 && history[0].number !== undefined) {
         const lastNum = history[0].number;
-        // Filo & Scribd Safe Formula Rule: 0,2,4,6 -> Small, 1,3,5,9 -> Big
         if ([0, 2, 4, 6].includes(lastNum)) {
-            calculatedSmallScore += 40;
-            patternDesc = `Filo Formula Rule (Last Num ${lastNum} -> Small + Green)`;
+            calculatedSmallScore += 45;
+            patternDesc = `Safe Formula (Last Num ${lastNum} -> Small)`;
         } else if ([1, 3, 5, 9].includes(lastNum)) {
-            calculatedBigScore += 40;
-            patternDesc = `Filo Formula Rule (Last Num ${lastNum} -> Big + Red)`;
+            calculatedBigScore += 45;
+            patternDesc = `Safe Formula (Last Num ${lastNum} -> Big)`;
         }
     }
 
-    // 2. Dragon Streak Momentum
+    // 2. Pattern Recognition (Repeat, Alternate, Double, Long Run)
     if (history.length >= 2 && history[0].actual === history[1].actual) {
         const streakColor = history[0].actual;
         if (streakColor === "BIG") calculatedBigScore += 30;
         else calculatedSmallScore += 30;
-        patternDesc = `Dragon Trend (${streakColor} Follow)`;
-    } 
-    // 3. Alternating Jump (AB-AB Split Pattern)
-    else if (history.length >= 3 && history[0].actual !== history[1].actual && history[1].actual !== history[2].actual) {
+        patternDesc = `Repeat / Dragon Streak (${streakColor})`;
+    } else if (history.length >= 3 && history[0].actual !== history[1].actual && history[1].actual !== history[2].actual) {
         const expected = history[0].actual === "BIG" ? "SMALL" : "BIG";
         if (expected === "BIG") calculatedBigScore += 25;
         else calculatedSmallScore += 25;
-        patternDesc = "Split Alternating (AB-AB)";
+        patternDesc = "Alternate Split Pattern (AB-AB)";
     }
 
     let rawSignal = calculatedBigScore >= calculatedSmallScore ? "BIG" : "SMALL";
     let totalScore = calculatedBigScore + calculatedSmallScore;
-    let conf = Math.min(Math.max(Math.round((Math.max(calculatedBigScore, calculatedSmallScore) / totalScore) * 100), 65), 97);
+    let conf = Math.min(Math.max(Math.round((Math.max(calculatedBigScore, calculatedSmallScore) / totalScore) * 100), 68), 98);
 
     if (globalState.reverseMode) {
         rawSignal = rawSignal === "BIG" ? "SMALL" : "BIG";
         patternDesc += " [INVERTED]";
     }
 
-    // Dynamic Exact Number & Color Mapping (Respecting Violet 0 & 5 Rules)
+    // 0-9 Mapping & Violet Rules (0 & 5 Special Handling)
     let predictedNum = 7;
     let predictedColor = "GREEN";
     const entropySeed = Date.now() + history.length;
@@ -113,9 +110,9 @@ function runMasterAnalysis() {
         if (predictedNum === 5) {
             predictedColor = "GREEN/VIOLET";
         } else if (predictedNum % 2 === 0) {
-            predictedColor = "RED"; // Even Big (6,8) -> Red
+            predictedColor = "RED";
         } else {
-            predictedColor = "GREEN"; // Odd Big (7,9) -> Green
+            predictedColor = "GREEN";
         }
     } else {
         const smallPool = [0, 1, 2, 3, 4];
@@ -124,9 +121,9 @@ function runMasterAnalysis() {
         if (predictedNum === 0) {
             predictedColor = "RED/VIOLET";
         } else if (predictedNum % 2 === 0) {
-            predictedColor = "RED"; // Even Small (2,4) -> Red
+            predictedColor = "RED";
         } else {
-            predictedColor = "GREEN"; // Odd Small (1,3) -> Green
+            predictedColor = "GREEN";
         }
     }
 
@@ -146,7 +143,7 @@ function executeOutcome(actualOutcome) {
     const aiPrediction = runMasterAnalysis();
     const isWin = (aiPrediction.signal === actualOutcome);
 
-    // Reinforcement Learning weight adaptation
+    // Reinforcement Learning update weights
     if (isWin) {
         if (actualOutcome === "BIG") tfData.aiWeights.bigWeight += 5;
         else tfData.aiWeights.smallWeight += 5;
@@ -186,7 +183,7 @@ function executeOutcome(actualOutcome) {
         pattern: aiPrediction.pattern
     });
 
-    if (tfData.history.length > 40) tfData.history.pop();
+    if (tfData.history.length > 45) tfData.history.pop();
 
     try {
         periodInput.value = (BigInt(currentPeriod) + 1n).toString();

@@ -4,13 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universal AI Terminal - Master Quant v9.5 Pro</title>
+    <meta name="description" content="Quant Terminal — a free browser-based session tracker for Wingo rounds with stake presets, progression models and a clean execution log.">
+    <meta name="theme-color" content="#030712">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Quant Terminal — Master Quant v9.5">
+    <meta property="og:description" content="Free browser-based Wingo session tracker with stake presets and progression models.">
+    <meta property="og:url" content="https://akingstar.github.io/universal-game-analyzer/">
+    <meta name="twitter:card" content="summary">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: radial-gradient(900px 520px at 85% -10%, rgba(16,185,129,.14), transparent 60%), radial-gradient(700px 420px at -10% 110%, rgba(34,211,238,.10), transparent 55%), #030712; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         .glass-card { background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(2, 6, 23, 0.95)); backdrop-filter: blur(12px); }
         .glow-emerald { box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.15); }
+        ::selection { background: rgba(16,185,129,.45); color: #fff; }
+        :focus-visible { outline: 2px solid rgba(52,211,153,.8); outline-offset: 3px; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg,#34d399,#22d3ee); border-radius: 99px; border: 3px solid transparent; background-clip: padding-box; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; } }
     </style>
 </head>
 <body class="bg-[#030712] text-slate-100 min-h-screen selection:bg-emerald-500 selection:text-slate-950">
@@ -19,7 +34,7 @@
         <!-- Header -->
         <header class="flex justify-between items-center mb-5 border-b border-slate-800/60 pb-3.5">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 font-black text-slate-950 text-base">AI</div>
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20 overflow-hidden"><svg viewBox="0 0 64 64" class="w-9 h-9" aria-hidden="true"><defs><linearGradient id="akg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#031310"/><rect x="3" y="3" width="58" height="58" rx="14" fill="url(#akg)" opacity=".22"/><rect x="3.5" y="3.5" width="57" height="57" rx="13.5" fill="none" stroke="url(#akg)" stroke-opacity=".7"/><path d="M17 45 27 19h4l10 26" fill="none" stroke="#fff" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M21.5 36.5h15" stroke="#fff" stroke-width="4.4" stroke-linecap="round"/><path d="M44 19v26M56 19 45.5 32 56 45" fill="none" stroke="#fff" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <div>
                     <h1 class="text-base font-black tracking-wide bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">QUANT TERMINAL</h1>
                     <p class="text-[10px] text-slate-400 font-medium">Professional Wingo Neural Matrix v9.5</p>
@@ -142,6 +157,11 @@
                 <div class="text-center text-xs text-slate-500 py-4 font-medium">No rounds logged in current session.</div>
             </div>
         </div>
+
+        <p class="mt-6 text-center text-[10px] leading-relaxed text-slate-500">
+            Educational session tracker only. Wingo is a game of chance — no tool can predict or guarantee outcomes.
+            Never stake money you cannot afford to lose. 18+ · Play responsibly.
+        </p>
 
     </div>
 

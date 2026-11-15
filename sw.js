@@ -1,4 +1,4 @@
-const CACHE = "quantterminal-v1";
+const CACHE = "quantterminal-v2";
 const CORE = ["/universal-game-analyzer/", "/universal-game-analyzer/index.html"];
 
 self.addEventListener("install", event => {
@@ -42,12 +42,14 @@ self.addEventListener("fetch", event => {
   }
 
   event.respondWith(
-    caches.match(request).then(hit => hit || fetch(request).then(response => {
-      if (response.ok) {
-        const copy = response.clone();
-        caches.open(CACHE).then(cache => cache.put(request, copy));
-      }
-      return response;
-    }))
+    fetch(request)
+      .then(response => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE).then(cache => cache.put(request, copy));
+        }
+        return response;
+      })
+      .catch(() => caches.match(request).then(hit => hit || Response.error()))
   );
 });

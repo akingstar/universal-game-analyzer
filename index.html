@@ -40,7 +40,13 @@
                     <p class="text-[10px] text-slate-400 font-medium">Professional Wingo Neural Matrix v9.5</p>
                 </div>
             </div>
-            <button onclick="resetSession()" class="text-[11px] bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-3 py-1.5 rounded-xl font-semibold transition-all cursor-pointer flex items-center gap-1.5">🗑️ Reset</button>
+            <div class="flex items-center gap-1.5">
+                <button onclick="undoLast()" title="Undo last logged round" class="text-[11px] bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-xl font-semibold transition-all cursor-pointer">↩ Undo</button>
+                <button onclick="exportState()" title="Download session backup" class="text-[11px] bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-xl font-semibold transition-all cursor-pointer">⬇ Backup</button>
+                <button onclick="document.getElementById('importStateFile').click()" title="Restore a session backup" class="text-[11px] bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 px-2.5 py-1.5 rounded-xl font-semibold transition-all cursor-pointer">⬆ Restore</button>
+                <button onclick="resetSession()" class="text-[11px] bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2.5 py-1.5 rounded-xl font-semibold transition-all cursor-pointer">🗑️ Reset</button>
+                <input type="file" id="importStateFile" accept="application/json,.json" class="hidden" onchange="importState(this)">
+            </div>
         </header>
 
         <!-- Timeframe Selector Tabs -->

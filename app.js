@@ -54,6 +54,54 @@ function resetSession() {
     }
 }
 
+function undoLast() {
+    const tfData = globalState.timeframes[globalState.activeTimeframe];
+    if (!tfData.history.length) {
+        alert("Nothing to undo in this timeframe.");
+        return;
+    }
+    const last = tfData.history.shift();
+    if (last.prev) {
+        Object.assign(tfData, last.prev);
+    } else {
+        tfData.total = tfData.history.length;
+        tfData.wins = tfData.history.filter(h => h.win).length;
+        tfData.losses = tfData.total - tfData.wins;
+        tfData.profit = tfData.history.reduce((sum, h) => sum + (h.win ? h.stake * 0.95 : -h.stake), 0);
+        tfData.recoveryLevel = 0;
+    }
+    saveState();
+    renderDashboard();
+}
+
+function exportState() {
+    const blob = new Blob([JSON.stringify(globalState, null, 2)], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `wingo-session-${new Date().toISOString().slice(0, 10)}.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+}
+
+function importState(input) {
+    const file = input.files && input.files[0];
+    input.value = "";
+    if (!file) return;
+    file.text().then(text => {
+        const data = JSON.parse(text);
+        const tfs = ['30s', '1m', '3m', '5m'];
+        const valid = data && data.timeframes && tfs.every(tf => data.timeframes[tf] && Array.isArray(data.timeframes[tf].history));
+        if (!valid) throw new Error("Not a valid session backup.");
+        if (!tfs.includes(data.activeTimeframe)) data.activeTimeframe = '30s';
+        if (![10, 50, 100, 500].includes(data.baseBet)) data.baseBet = 10;
+        if (!['martingale', 'flat'].includes(data.strategy)) data.strategy = 'martingale';
+        data.reverseMode = Boolean(data.reverseMode);
+        if (!confirm("Restore this backup? Current local session will be replaced.")) return;
+        localStorage.setItem('universal_terminal_v90', JSON.stringify(data));
+        location.reload();
+    }).catch(err => alert("Restore failed: " + err.message));
+}
+
 // Master Algorithmic Analysis Engine (Studocu + Scribd + Filo + Pattern Triggers)
 function runMasterAnalysis() {
     const tfData = globalState.timeframes[globalState.activeTimeframe];
@@ -142,6 +190,14 @@ function executeOutcome(actualOutcome) {
     const tfData = globalState.timeframes[globalState.activeTimeframe];
     const aiPrediction = runMasterAnalysis();
     const isWin = (aiPrediction.signal === actualOutcome);
+    const prevState = {
+        total: tfData.total,
+        wins: tfData.wins,
+        losses: tfData.losses,
+        profit: tfData.profit,
+        recoveryLevel: tfData.recoveryLevel,
+        aiWeights: { ...tfData.aiWeights }
+    };
 
     // Reinforcement Learning update weights
     if (isWin) {
@@ -173,6 +229,7 @@ function executeOutcome(actualOutcome) {
     }
 
     tfData.history.unshift({
+        prev: prevState,
         period: currentPeriod,
         predicted: aiPrediction.signal,
         number: aiPrediction.number,

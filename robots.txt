@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://akingstar.github.io/universal-game-analyzer/sitemap.xml
